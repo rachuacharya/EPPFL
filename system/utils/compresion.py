@@ -4,7 +4,7 @@ import copy
 import scipy.fftpack as spfft
 import math
 import torch
-from seal import *
+# from seal import *
 
 
 def dct_2d(x):
@@ -42,14 +42,14 @@ def get_transposed_diagonals(u_transposed):
 
 class Packages(object):
     def __init__(self, shape=(200, 200)):
-        self.Packages_shape = shape  # 包裹形状
-        self.Packages_size = shape[0] * shape[1]  # 包裹容量
-        self.Packed_item = None  # 打包好的数据
+        self.Packages_shape = shape  # Package Shape
+        self.Packages_size = shape[0] * shape[1]  # Package size
+        self.Packed_item = None  # Packed Data
         #        self.Additional_item = None                 #不符合打包条件的数据
-        self.is_Compressed = False  # 包裹是否被压缩
-        self.Volume_of_Raw_Item = None  # 包裹原始大小
-        self.Volume_of_Compressed_Item = None  # 包裹压缩后的大小
-        self.Index_of_Item = {}  # 打包索引
+        self.is_Compressed = False  # Whether the packacge is compressed
+        self.Volume_of_Raw_Item = None  # Original size of the package
+        self.Volume_of_Compressed_Item = None  # Package size after compression 
+        self.Index_of_Item = {}  # Packing Index
         self.Packed_item_en = None
         self.en_shape = None
 
@@ -70,41 +70,47 @@ class Packages(object):
     #     return self
 
     def pack_up(self, client_model):
+        """Packing Method for Client Model Parameters"""
         self.Volume_of_Raw_Item = 0
 
-        Item_left = 0  # 左指针
-        Item_right = 0  # 右指针
-        Package_pt = 0  # 包内偏移
-        Package_idx = 0  # 包裹编号
+        # Initialize pointers and counters for packing
+        Item_left = 0   # Left pointer for data        
+        Item_right = 0  # Right pointer for data
+        Package_pt = 0  # Pointer for current package position
+        Package_idx = 0 # Index of the package being processed
         package = torch.zeros(self.Packages_shape, dtype=torch.float32)
 
         for name, param in client_model.named_parameters():
-            Item_left = 0
+            Item_left = 0 # Reset left pointer for each parameter
             data_shape = param.shape
-            data = copy.deepcopy(param.data.view(-1))
-            size = data.size()[0]
-            self.Volume_of_Raw_Item += size
+            data = copy.deepcopy(param.data.view(-1))   # Flatten parameter data
+            size = data.size()[0]                       # size of flattened data
+            self.Volume_of_Raw_Item += size             # Accumulate total volume of raw data packed
             Item_right = Item_left + size
 
+            # If the remaining capacity of the current package is 0, push the package
             if self.Packages_size - Package_pt == 0:
                 self.package_push(package)
                 Package_idx += 1
                 Package_pt = 0
                 package = torch.zeros(self.Packages_shape, dtype=torch.float32)
-
+            
+            # Store index, size, and shape information of the packed item
             self.Index_of_Item[name] = (
-                Package_idx, Package_pt, size, data_shape)  # 包裹编号，包内偏移量，数据长度,原数据格式
-
-            if (size <= self.Packages_size - Package_pt):  # 包裹是否能装下
+                Package_idx, Package_pt, size, data_shape)  # Package index, package offset, data length, original data shape
+            
+            if (size <= self.Packages_size - Package_pt):  
+                # If it fits, pack the data into the current package
                 package.view(-1)[Package_pt:Package_pt + size] = data
                 Package_pt += size
             else:
                 while (Item_right is not Item_left):
-                    a_size = Item_right - Item_left  # 还需打包的数据长度
-                    b_size = self.Packages_size - Package_pt  # 包裹剩余容量
-                    sub_size = a_size if a_size <= b_size else b_size  # 本轮打包容量
+                    a_size = Item_right - Item_left  # Remaining size of data to be packed
+                    b_size = self.Packages_size - Package_pt  #  Remaining capacity of the current package
+                    sub_size = a_size if a_size <= b_size else b_size  # Determine the size to pack in this iteration
                     package.view(-1)[Package_pt:Package_pt +
-                                     sub_size] = data[Item_left:Item_left + sub_size]
+                                     sub_size] = data[Item_left:Item_left + sub_size] # Pack data into package
+                    # Update pointers for data
                     Item_left += sub_size
                     Package_pt += sub_size
 
@@ -120,9 +126,13 @@ class Packages(object):
         self.package_push(package)
 
     def package_push(self, package):
+        """Function that adds package to Packed_Item Attribute"""
+        # If packed item is empty
         if self.Packed_item is None:
             self.Packed_item = copy.deepcopy(package)
         else:
+            # If Packed_item is not empty concatenate the package
+            # if dimension not 3 then add new dimension to Packed_item
             if self.Packed_item.dim() != 3:
                 self.Packed_item = self.Packed_item.unsqueeze(0)
             self.Packed_item = torch.cat(
