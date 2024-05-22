@@ -30,31 +30,34 @@ def run(args):
         print("Creating server and clients ...")
         start = time.time()
 
-        # Generate args.model
+        #  Define Model and Move it to Specified device 
         if model_str == "mlr":
+            # Multi Layer Perceptron
             if args.dataset == "mnist" or args.dataset == "fmnist":
                 args.model = FedAvgMLP(1*28*28, num_classes=args.num_classes).to(args.device)
 
         elif model_str == "cnn":
+            # Convolutional Neural Network
             if args.dataset == "mnist" or args.dataset == "fmnist":
                 args.model = FedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
             elif args.dataset == "Cifar10":
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
-
-        
+       
         elif model_str == "resnet":
+            # Resnet for Tranfer Learning
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
 
         else:
             raise NotImplementedError
 
-        # select algorithm
+        # Select algorithm
         if args.algorithm == "FedCE":
             server = FedCE(args, i)
             
         else:
             raise NotImplementedError
 
+        # Train Server
         server.train()
 
         time_list.append(time.time()-start)
@@ -63,9 +66,11 @@ def run(args):
     
 
     # Global average
+    # args.goal is  not defined
     average_data(dataset=args.dataset, 
                 algorithm=args.algorithm, 
-                goal=args.goal, 
+                # goal=args.goal, 
+                goal = "",
                 times=args.times, 
                 length=args.global_rounds/args.eval_gap+1)
 
@@ -89,13 +94,13 @@ if __name__ == "__main__":
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
-    parser.add_argument('-gr', "--global_rounds", type=int, default=1000)
+    parser.add_argument('-gr', "--global_rounds", type=int, default=5) # default 1000
     parser.add_argument('-ls', "--local_steps", type=int, default=20)
     parser.add_argument('-algo', "--algorithm", type=str, default="FedCE")
     parser.add_argument('-jr', "--join_ratio", type=float, default=1.0,
                         help="Ratio of clients per round")
-    parser.add_argument('-nc', "--num_clients", type=int, default=20,
-                        help="Total number of clients")
+    parser.add_argument('-nc', "--num_clients", type=int, default=5,
+                        help="Total number of clients") # default 20
     parser.add_argument('-pv', "--prev", type=int, default=0,
                         help="Previous Running times")
     parser.add_argument('-t', "--times", type=int, default=1,

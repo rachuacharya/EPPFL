@@ -22,7 +22,7 @@ def get_all_results_for_one_algo(algorithm="", dataset="", goal="", times=10, le
     algorithms_list = [algorithm] * times
     for i in range(times):
         file_name = dataset + "_" + \
-            algorithms_list[i] + "_" + goal + "_" + str(i)
+            algorithms_list[i] + "_" + str(i)
         test_acc[i, :] = np.array(
             read_data_then_delete(file_name, delete=False))[:length]
 
