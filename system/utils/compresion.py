@@ -172,11 +172,14 @@ class Packages(object):
         self.Volume_of_Compressed_Item = 0
         for idx in range(self.Packed_item.shape[0]):
             if idx == 0:
+                # Apply 2d DCT, Flatten Transform Data, and take compressed samples of (size * compression_ratio)
                 temp = dct_2d(
                     self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
             else:
                 if temp.dim() == 1:
+                    # Add an extra dimension to a tensor:  [n] -> [1, n]
                     temp = temp.unsqueeze(0)
+                # Concatenate as one single compressed tensor
                 temp = torch.cat(
                     (temp, dct_2d(
                         self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
