@@ -167,42 +167,55 @@ class Packages(object):
             param.data += data.reshape(data_shape).to(dev)
         return global_model
 
-    def package_compresion(self, r):
+    def package_compresion(self, R):
         temp = []
         self.Volume_of_Compressed_Item = 0
+
+        all_gradients = []
+
+        # Flatten and gather all gradients
         for idx in range(self.Packed_item.shape[0]):
-            if idx == 0:
-                temp = dct_2d(
-                    self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
-            else:
-                if temp.dim() == 1:
-                    temp = temp.unsqueeze(0)
-                temp = torch.cat(
-                    (temp, dct_2d(
-                        self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
-            self.Volume_of_Compressed_Item += math.ceil(self.Packages_size * r)
+            all_gradients.append(self.Packed_item[idx].view(-1))
+
+        all_gradients = torch.cat(all_gradients)
+        num_elements = all_gradients.numel()
+        
+        # Calculate the threshold value
+        k = math.ceil(num_elements * R)
+        threshold_value = torch.topk(all_gradients.abs(), k, largest=False).values.max()
+        
+        # Create a mask for values below the threshold
+        mask = all_gradients.abs() >= threshold_value
+        sparse_gradients = all_gradients * mask
+        
+        # Reshape gradients back to original shape
+        start_idx = 0
+        for idx in range(self.Packed_item.shape[0]):
+            end_idx = start_idx + self.Packed_item[idx].numel()
+            self.Packed_item[idx] = sparse_gradients[start_idx:end_idx].view(self.Packed_item[idx].shape)
+            start_idx = end_idx
+        
+        self.Volume_of_Compressed_item = sparse_gradients.nonzero().numel()
 
         self.is_Compressed = True
-        # temp = torch.tensor(temp).numpy()
-
-        self.Packed_item = temp
-        # print("1",self.Volume_of_Raw_Item)
-        # print("2",self.Volume_of_Compressed_Item)
-
+        
     def package_decompresion(self, r):
-        res = []
-        for idx in range(self.Packed_item.shape[0]):
-            temp = torch.zeros(self.Packages_shape, dtype=torch.float32)
-            # print(idx,math.ceil(self.Packages_size * r))
-            temp.view(-1)[:math.ceil(self.Packages_size * r)] = self.Packed_item[idx].view(-1)
-            if idx == 0:
-                res = idct_2d(temp)
-            else:
-                if res.dim() != 3:
-                    res = res.unsqueeze(0)
-                res = torch.cat((res, idct_2d(temp).unsqueeze(0)), dim=0)
+        # res = []
+        # print(f"Before Decompression: {self.Packed_item.shape}")
+        # for idx in range(self.Packed_item.shape[0]):
+        #     temp = torch.zeros(self.Packages_shape, dtype=torch.float32)
+        #     # print(idx,math.ceil(self.Packages_size * r))
+        #     temp.view(-1)[:math.ceil(self.Packages_size * r)] = self.Packed_item[idx].view(-1)
+        #     if idx == 0:
+        #         res = idct_2d(temp)
+        #     else:
+        #         if res.dim() != 3:
+        #             res = res.unsqueeze(0)
+        #         res = torch.cat((res, idct_2d(temp).unsqueeze(0)), dim=0)
         self.is_Compressed = False
-        self.Packed_item = res
+        # self.Packed_item = res
+        # print(f"After Decompression: {self.Packed_item.shape}")
+        
 
     def package_en(self, ckks_tools):
         matrix = copy.deepcopy(self.Packed_item.cpu().numpy())
