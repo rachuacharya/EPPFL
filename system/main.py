@@ -94,12 +94,12 @@ if __name__ == "__main__":
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
-    parser.add_argument('-gr', "--global_rounds", type=int, default=5) # default 1000
+    parser.add_argument('-gr', "--global_rounds", type=int, default=300) # default 1000
     parser.add_argument('-ls', "--local_steps", type=int, default=20)
     parser.add_argument('-algo', "--algorithm", type=str, default="FedCE")
     parser.add_argument('-jr', "--join_ratio", type=float, default=1.0,
                         help="Ratio of clients per round")
-    parser.add_argument('-nc', "--num_clients", type=int, default=5,
+    parser.add_argument('-nc', "--num_clients", type=int, default=10,
                         help="Total number of clients") # default 20
     parser.add_argument('-pv', "--prev", type=int, default=0,
                         help="Previous Running times")
