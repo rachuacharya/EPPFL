@@ -94,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument('-lbs', "--batch_size", type=int, default=10)
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
-    parser.add_argument('-gr', "--global_rounds", type=int, default=300) # default 1000
+    parser.add_argument('-gr', "--global_rounds", type=int, default=100) # default 1000
     parser.add_argument('-ls', "--local_steps", type=int, default=20)
     parser.add_argument('-algo', "--algorithm", type=str, default="FedCE")
     parser.add_argument('-jr', "--join_ratio", type=float, default=1.0,
@@ -109,6 +109,7 @@ if __name__ == "__main__":
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='models')
     parser.add_argument('-r', "--r", type=float, default=0.00005)
+    parser.add_argument('-tf', "--transformation", type=str, default = 'dct')
 
     
 

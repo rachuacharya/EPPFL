@@ -1,18 +1,63 @@
 import numpy as np
 import sys
 import copy
+import pywt
 import scipy.fftpack as spfft
+import scipy.linalg as la
 import math
 import torch
+import matplotlib.pyplot as plt
 # from seal import *
 
 
-def dct_2d(x):
-    return torch.tensor(spfft.dct(spfft.dct(x.numpy().T, norm='ortho').T, norm='ortho'))
+fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
+def dct_2d(x):
+    # Apply transformation to the Transpose and then tranpose it back to original orientation for another transformation
+    return torch.tensor(spfft.dct(spfft.dct(x.numpy().T, norm='ortho').T, norm='ortho'))
 
 def idct_2d(x):
     return torch.tensor(spfft.idct(spfft.idct(x.numpy().T, norm='ortho').T, norm='ortho'))
+
+def fft_2d(x):
+    return torch.tensor(spfft.rfft(spfft.rfft(x.numpy().T).T))
+
+def ifft_2d(x):
+    return torch.tensor(spfft.irfft(spfft.irfft(x.numpy().T).T))
+
+def wav_2d(x, signal):
+    coeffs = pywt.dwt2(x.numpy(), signal)
+    axes[0, 0].imshow(coeffs[0], cmap='gray')
+    axes[0, 0].set_title('Original Data')
+    axes[0, 0].axis('off')
+
+    axes[0, 1].imshow(coeffs[1][0], cmap='gray')
+    axes[0, 1].set_title('Horizontal Detail Coefficients (cH)')
+    axes[0, 1].axis('off')
+
+    axes[1, 0].imshow(coeffs[1][1], cmap='gray')
+    axes[1, 0].set_title('Vertical Detail Coefficients (cV)')
+    axes[1, 0].axis('off')
+
+    axes[1, 1].imshow(coeffs[1][2], cmap='gray')
+    axes[1, 1].set_title('Diagonal Detail Coefficients (cD)')
+    axes[1, 1].axis('off')
+    plt.show()
+    return torch.tensor(coeffs[0])
+
+def iwav_2d(x, signal):
+    coeffs = x.numpy(), (None, None, None)
+    print(np.array(pywt.idwt2(coeffs, "haar")[0]).shape)
+    return torch.tensor(pywt.idwt2(coeffs, signal)[0])
+
+def had_2d(x):
+    return la.hadamard()
+
+# def hil_2d(x):
+#     return torch.tensor(sphil.hilbert2(x.numpy()))
+
+# def ihil_2d(x):
+#     return torch.tensor(splin.invhilbert2(x.numpy()))
 
 
 def get_u_transpose(shape):
@@ -38,7 +83,6 @@ def get_transposed_diagonals(u_transposed):
         transposed_diagonals[i] = np.concatenate([a, b])
 
     return transposed_diagonals
-
 
 class Packages(object):
     def __init__(self, shape=(200, 200)):
@@ -167,23 +211,51 @@ class Packages(object):
             param.data += data.reshape(data_shape).to(dev)
         return global_model
 
-    def package_compresion(self, r):
+    def package_compresion(self, r, transformation):
         temp = []
+        wav_slice = []
         self.Volume_of_Compressed_Item = 0
         for idx in range(self.Packed_item.shape[0]):
             if idx == 0:
-                # Apply 2d DCT, Flatten Transform Data, and take compressed samples of (size * compression_ratio)
-                temp = dct_2d(
-                    self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
+                # Apply Transformation, Flatten Data, and take compressed samples of (size * compression_ratio)
+                if transformation == 'dct':
+                    temp = dct_2d(
+                        self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
+                elif transformation == 'fft':
+                    temp = fft_2d(
+                        self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
+                elif transformation == 'wav':        
+                    temp = wav_2d(
+                        self.Packed_item[idx], 'db1').view(-1)[:math.ceil(self.Packages_size * r)]
+                elif transformation == 'haar':        
+                    temp = wav_2d(
+                        self.Packed_item[idx], 'haar').view(-1)[:math.ceil(self.Packages_size * r)]
+
             else:
                 if temp.dim() == 1:
                     # Add an extra dimension to a tensor:  [n] -> [1, n]
                     temp = temp.unsqueeze(0)
                 # Concatenate as one single compressed tensor
-                temp = torch.cat(
-                    (temp, dct_2d(
-                        self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
-            self.Volume_of_Compressed_Item += math.ceil(self.Packages_size * r)
+                if transformation == 'dct':
+                    temp = torch.cat(
+                        (temp, dct_2d(
+                            self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0))) 
+                elif transformation =='fft':
+                    # Concatenate as one single compressed tensor
+                    temp = torch.cat(
+                        (temp, fft_2d(
+                            self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
+                elif transformation == 'wav':
+                    temp = torch.cat(
+                        (temp, wav_2d(
+                            self.Packed_item[idx], 'db1').view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
+                elif transformation == 'haar':
+                    temp = torch.cat(
+                        (temp, wav_2d(
+                            self.Packed_item[idx], 'haar').view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
+                    
+                self.Volume_of_Compressed_Item += math.ceil(self.Packages_size * r)
+            
 
         self.is_Compressed = True
         # temp = torch.tensor(temp).numpy()
@@ -192,18 +264,33 @@ class Packages(object):
         # print("1",self.Volume_of_Raw_Item)
         # print("2",self.Volume_of_Compressed_Item)
 
-    def package_decompresion(self, r):
+    def package_decompresion(self, r, transformation):
         res = []
         for idx in range(self.Packed_item.shape[0]):
             temp = torch.zeros(self.Packages_shape, dtype=torch.float32)
             # print(idx,math.ceil(self.Packages_size * r))
             temp.view(-1)[:math.ceil(self.Packages_size * r)] = self.Packed_item[idx].view(-1)
             if idx == 0:
-                res = idct_2d(temp)
+                if transformation =='dct':
+                    res = idct_2d(temp)
+                elif transformation == 'fft':
+                    res = ifft_2d(temp)
+                elif transformation == 'wav':
+                    res = iwav_2d(temp, 'db1')
+                elif transformation == 'haar':
+                    res = iwav_2d(temp, 'haar')
             else:
                 if res.dim() != 3:
                     res = res.unsqueeze(0)
-                res = torch.cat((res, idct_2d(temp).unsqueeze(0)), dim=0)
+                if transformation =='dct':
+                    res = torch.cat((res, idct_2d(temp).unsqueeze(0)), dim=0)
+                elif transformation == 'fft':
+                    res = torch.cat((res, ifft_2d(temp).unsqueeze(0)), dim=0)
+                elif transformation == 'wav':
+                    res = torch.cat((res, iwav_2d(temp, 'db1').unsqueeze(0)), dim=0) 
+                elif transformation == 'haar':
+                    res = torch.cat((res, iwav_2d(temp, 'haar').unsqueeze(0)), dim=0) 
+
         self.is_Compressed = False
         self.Packed_item = res
 

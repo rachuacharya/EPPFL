@@ -106,7 +106,7 @@ class Server(object):
         self.global_model_c = Packages()
         self.global_model_c.pack_up(copy.deepcopy(self.global_model))
         # print("1",self.global_model_c.Packed_item.shape)
-        self.global_model_c.package_compresion(self.r)
+        self.global_model_c.package_compresion(self.r, args.transformation)
         # print("2",self.global_model_c.Packed_item.shape)
         self.global_model_c.package_en(self.ckks_tools)
         self.init = False

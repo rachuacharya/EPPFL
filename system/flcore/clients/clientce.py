@@ -4,6 +4,7 @@ import numpy as np
 import time
 from flcore.clients.clientbase import Client
 from utils.compresion import *
+import pywt
 
 
 class clientCE(Client):
@@ -17,6 +18,7 @@ class clientCE(Client):
         self.init = False
         self.r = args.r  
         self.ckks_tools = ckks
+        self.transformation = args.transformation
 
         self.alpha = 1
         self.mu = 0.001
@@ -36,7 +38,7 @@ class clientCE(Client):
         # self.init = True
         # self.compressed_model.package_de(self.ckks_tools)
         if self.compressed_model.is_Compressed is True:
-            self.compressed_model.package_decompresion(self.r)
+            self.compressed_model.package_decompresion(self.r ,self.transformation)
         self.compressed_model = copy.deepcopy(
             self.compressed_model.unpack(copy.deepcopy(self.model), self.device))
 
@@ -85,7 +87,7 @@ class clientCE(Client):
 
         self.compressed_model = Packages()
         self.compressed_model.pack_up(copy.deepcopy(self.model))
-        self.compressed_model.package_compresion(self.r)
+        self.compressed_model.package_compresion(self.r, self.transformation)
         self.compressed_model.package_en(self.ckks_tools)
         
 
