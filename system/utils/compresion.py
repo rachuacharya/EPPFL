@@ -3,12 +3,13 @@ import sys
 import copy
 import pywt
 import scipy.fftpack as spfft
-import scipy.linalg as la
 import math
 import torch
 import matplotlib.pyplot as plt
+from sympy import fwht, ifwht
 # from seal import *
 
+global_var = list()
 
 fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
@@ -26,39 +27,21 @@ def ifft_2d(x):
     return torch.tensor(spfft.irfft(spfft.irfft(x.numpy().T).T))
 
 def wav_2d(x, signal):
-    coeffs = pywt.dwt2(x.numpy(), signal)
-    axes[0, 0].imshow(coeffs[0], cmap='gray')
-    axes[0, 0].set_title('Original Data')
-    axes[0, 0].axis('off')
-
-    axes[0, 1].imshow(coeffs[1][0], cmap='gray')
-    axes[0, 1].set_title('Horizontal Detail Coefficients (cH)')
-    axes[0, 1].axis('off')
-
-    axes[1, 0].imshow(coeffs[1][1], cmap='gray')
-    axes[1, 0].set_title('Vertical Detail Coefficients (cV)')
-    axes[1, 0].axis('off')
-
-    axes[1, 1].imshow(coeffs[1][2], cmap='gray')
-    axes[1, 1].set_title('Diagonal Detail Coefficients (cD)')
-    axes[1, 1].axis('off')
-    plt.show()
+    coeffs = pywt.dwt2(data = x.numpy(), wavelet = signal)
+    # print(f"size of coeff 0 : {np.array(coeffs[0]).shape}")
     return torch.tensor(coeffs[0])
 
 def iwav_2d(x, signal):
     coeffs = x.numpy(), (None, None, None)
-    print(np.array(pywt.idwt2(coeffs, "haar")[0]).shape)
-    return torch.tensor(pywt.idwt2(coeffs, signal)[0])
+    row, col = x.numpy().shape
+    res = pywt.idwt2(coeffs, signal) 
+    return torch.tensor(res[:row, :col])
 
 def had_2d(x):
-    return la.hadamard()
+    return torch.tensor(fwht( x.numpy().astype(np.float32)), dtype = torch.float32)
 
-# def hil_2d(x):
-#     return torch.tensor(sphil.hilbert2(x.numpy()))
-
-# def ihil_2d(x):
-#     return torch.tensor(splin.invhilbert2(x.numpy()))
-
+def ihad_2d(x):
+    return torch.tensor(ifwht(x.numpy().astype(np.float32)), dtype = torch.float32)
 
 def get_u_transpose(shape):
     u_transpose = np.zeros((shape[0]**2, shape[1]**2))
@@ -85,7 +68,7 @@ def get_transposed_diagonals(u_transposed):
     return transposed_diagonals
 
 class Packages(object):
-    def __init__(self, shape=(200, 200)):
+    def __init__(self, shape=(256, 256)):
         self.Packages_shape = shape  # Package Shape
         self.Packages_size = shape[0] * shape[1]  # Package size
         self.Packed_item = None  # Packed Data
@@ -96,22 +79,6 @@ class Packages(object):
         self.Index_of_Item = {}  # Packing Index
         self.Packed_item_en = None
         self.en_shape = None
-
-    # def __add__(self, other):
-    #     self.Packed_item += other.Packed_item
-    #     return self
-
-    # def __sub__(self, other):
-    #     self.Packed_item -= other.Packed_item
-    #     return self
-
-    # def __truediv__(self, other):
-    #     self.Packed_item /= other
-    #     return self
-
-    # def __mul__(self, other):
-    #     self.Packed_item *= other
-    #     return self
 
     def pack_up(self, client_model):
         """Packing Method for Client Model Parameters"""
@@ -181,13 +148,12 @@ class Packages(object):
                 self.Packed_item = self.Packed_item.unsqueeze(0)
             self.Packed_item = torch.cat(
                 (self.Packed_item, copy.deepcopy(package).unsqueeze(0)))
-        return self.Packed_item.shape[0]  # 返回下包裹编号
-
+        return self.Packed_item.shape[0]  
+    
     def unpack(self, global_model, dev):
         if self.is_Compressed:
-            print("请先对包裹进行重建后再解压！！！")
             return 0
-        # unpacked_item = {}
+       
         for name, param in global_model.named_parameters():
             # for key in self.Index_of_Item:
             data = torch.tensor([], dtype=torch.float32)
@@ -213,7 +179,6 @@ class Packages(object):
 
     def package_compresion(self, r, transformation):
         temp = []
-        wav_slice = []
         self.Volume_of_Compressed_Item = 0
         for idx in range(self.Packed_item.shape[0]):
             if idx == 0:
@@ -230,6 +195,9 @@ class Packages(object):
                 elif transformation == 'haar':        
                     temp = wav_2d(
                         self.Packed_item[idx], 'haar').view(-1)[:math.ceil(self.Packages_size * r)]
+                elif transformation == 'had':        
+                    temp = had_2d(
+                        self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)]
 
             else:
                 if temp.dim() == 1:
@@ -253,7 +221,10 @@ class Packages(object):
                     temp = torch.cat(
                         (temp, wav_2d(
                             self.Packed_item[idx], 'haar').view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))
-                    
+                elif transformation == 'had':  
+                    temp = torch.cat(
+                        (temp, had_2d(
+                            self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))   
                 self.Volume_of_Compressed_Item += math.ceil(self.Packages_size * r)
             
 
@@ -279,6 +250,8 @@ class Packages(object):
                     res = iwav_2d(temp, 'db1')
                 elif transformation == 'haar':
                     res = iwav_2d(temp, 'haar')
+                elif transformation == 'had':
+                    res = ihad_2d(temp)
             else:
                 if res.dim() != 3:
                     res = res.unsqueeze(0)
@@ -290,6 +263,8 @@ class Packages(object):
                     res = torch.cat((res, iwav_2d(temp, 'db1').unsqueeze(0)), dim=0) 
                 elif transformation == 'haar':
                     res = torch.cat((res, iwav_2d(temp, 'haar').unsqueeze(0)), dim=0) 
+                if transformation =='had':
+                    res = torch.cat((res, ihad_2d(temp).unsqueeze(0)), dim=0)
 
         self.is_Compressed = False
         self.Packed_item = res
