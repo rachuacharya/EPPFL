@@ -69,6 +69,7 @@ class Server(object):
         self.times = times
         self.eval_gap = args.eval_gap
 
+        # Strip Enc-Dec
         parms = EncryptionParameters(scheme_type.ckks)
         poly_modulus_degree = 8192
         parms.set_poly_modulus_degree(poly_modulus_degree)
@@ -105,10 +106,9 @@ class Server(object):
         self.r = args.r  
         self.global_model_c = Packages()
         self.global_model_c.pack_up(copy.deepcopy(self.global_model))
-        # print("1",self.global_model_c.Packed_item.shape)
         self.global_model_c.package_compresion(self.r, args.transformation)
-        # print("2",self.global_model_c.Packed_item.shape)
-        self.global_model_c.package_en(self.ckks_tools)
+        # Strip Enc-Dec
+        # self.global_model_c.package_en(self.ckks_tools)
         self.init = False
 
     def set_clients(self, args, clientObj):
@@ -131,19 +131,11 @@ class Server(object):
 
     def send_models(self):
         assert (len(self.selected_clients) > 0)
-
-        # if self.init is False:
-        #     global_model_c = Packages()
-        #     global_model_c.pack_up(self.global_model)
-        #     global_model_c.package_compresion(self.r)
-        # self.init = True
-        self.global_model_c.package_de(self.ckks_tools)
+        # Strip Enc-Dec
+        # self.global_model_c.package_de(self.ckks_tools)
         self.global_model_c.is_Compressed = True
-        # print(self.global_model_c)
         for client in self.selected_clients:
-            # client.compressed_model = copy.deepcopy(self.global_model_c)
             client.compressed_model = self.global_model_c
-            # client.set_parameters_c(self.global_model)
 
     def receive_models(self):
         assert (len(self.selected_clients) > 0)
@@ -159,6 +151,7 @@ class Server(object):
             self.uploaded_models.append(client.compressed_model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
+        
 
     def receive_models_c(self):
         assert (len(self.selected_clients) > 0)
@@ -209,17 +202,23 @@ class Server(object):
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
+        
+        print(dir(self.uploaded_models[0]))
+        print(self.uploaded_models[0].Packed_item)
+        print(len(self.uploaded_models))
+        print(self.uploaded_weights)
 
-        self.global_model = copy.deepcopy(self.uploaded_models[0])
-        for param in self.global_model.parameters():
-            param.data.zero_()
+        self.global_model_c = self.uploaded_models[0]
+        self.global_model_c.Packed_item = self.global_model_c.Packed_item.zero_()
 
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
+        
+        print(self.global_model_c)
 
     def add_parameters(self, w, client_model):
-        for server_param, client_param in zip(self.global_model.parameters(), client_model.parameters()):
-            server_param.data += client_param.data.clone() * w
+        for client_param in client_model.Packed_item:
+            self.global_model_c.Packed_item += client_param * w
 
     def save_global_model(self):
         model_path = os.path.join("models", self.dataset)

@@ -30,10 +30,17 @@ class FedCE(Server):
             for client in self.selected_clients:
                 client.train()
 
-            # self.receive_models()
-            # self.aggregate_parameters()
-            self.receive_models_c()
-            self.aggregate_parameters_c()
+            self.receive_models()
+            
+            for j in range(self.num_clients):
+                with open(f'export/uploaded_model_{i}.txt', "a") as export_file:
+                    export_file.write(str(self.uploaded_models[j].Packed_item))
+
+            
+            self.aggregate_parameters()
+            # Strip Enc-Dec
+            # self.receive_models_c()
+            # self.aggregate_parameters_c()
 
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])

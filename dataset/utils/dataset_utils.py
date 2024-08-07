@@ -9,7 +9,7 @@ train_size = 0.75 # merge original training set and test set, then split it manu
 least_samples = batch_size / (1-train_size) # least samples for each client
 alpha = 0.1 # for Dirichlet distribution
 
-def check(config_path, train_path, test_path, num_clients, num_classes, niid=False, 
+def check(config_path, train_path, test_path, val_path, num_clients, num_classes, niid=False, 
         balance=True, partition=None):
     # check existing dataset
     if os.path.exists(config_path):
@@ -31,6 +31,10 @@ def check(config_path, train_path, test_path, num_clients, num_classes, niid=Fal
     dir_path = os.path.dirname(test_path)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+    dir_path = os.path.dirname(val_path)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    
 
     return False
 
@@ -126,33 +130,35 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
 
 def split_data(X, y):
     # Split dataset
-    train_data, test_data = [], []
-    num_samples = {'train':[], 'test':[]}
+    train_data, test_data, val_data = [], [], []
+    num_samples = {'train':[], 'test':[], 'val':[]}
 
     for i in range(len(y)):
-        unique, count = np.unique(y[i], return_counts=True)
-        if min(count) > 1:
-            X_train, X_test, y_train, y_test = train_test_split(
-                X[i], y[i], train_size=train_size, shuffle=True)
-        else:
-            X_train, X_test, y_train, y_test = train_test_split(
-                X[i], y[i], train_size=train_size, shuffle=True)
+        # First split: 80% train and 20% temp (test + validation)
+        X_train, X_temp, y_train, y_temp = train_test_split(
+            X[i], y[i], train_size=0.8, shuffle=True)
+        
+        # Second split: 50% of temp data to test and 50% to validation
+        X_test, X_val, y_test, y_val = train_test_split(
+            X_temp, y_temp, train_size=0.5, shuffle=True)
 
         train_data.append({'x': X_train, 'y': y_train})
         num_samples['train'].append(len(y_train))
         test_data.append({'x': X_test, 'y': y_test})
         num_samples['test'].append(len(y_test))
+        val_data.append({'x': X_val, 'y': y_val})
+        num_samples['val'].append(len(y_val))
 
-    print("Total number of samples:", sum(num_samples['train'] + num_samples['test']))
+    print("Total number of samples:", sum(num_samples['train'] + num_samples['test'] + num_samples['val']))
     print("The number of train samples:", num_samples['train'])
     print("The number of test samples:", num_samples['test'])
+    print("The number of validation samples:", num_samples['val'])
     print()
     del X, y
-    # gc.collect()
 
-    return train_data, test_data
+    return train_data, test_data, val_data
 
-def save_file(config_path, train_path, test_path, train_data, test_data, num_clients, 
+def save_file(config_path, train_path, test_path, val_path, train_data, test_data,val_data, num_clients, 
                 num_classes, statistic, niid=False, balance=True, partition=None):
     config = {
         'num_clients': num_clients, 
@@ -174,6 +180,10 @@ def save_file(config_path, train_path, test_path, train_data, test_data, num_cli
     for idx, test_dict in enumerate(test_data):
         with open(test_path + str(idx) + '.npz', 'wb') as f:
             np.savez_compressed(f, data=test_dict)
+    for idx, val_dict in enumerate(val_data):
+        with open(val_path + str(idx) + '.npz', 'wb') as f:
+            np.savez_compressed(f, data=val_dict)
+
     with open(config_path, 'w') as f:
         ujson.dump(config, f)
 

@@ -88,7 +88,7 @@ class clientCE(Client):
         self.compressed_model = Packages()
         self.compressed_model.pack_up(copy.deepcopy(self.model))
         self.compressed_model.package_compresion(self.r, self.transformation)
-        self.compressed_model.package_en(self.ckks_tools)
+        # self.compressed_model.package_en(self.ckks_tools)
         
 
         # self.model.cpu()

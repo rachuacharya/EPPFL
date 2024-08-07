@@ -24,8 +24,9 @@ def generate_mnist(dir_path, num_clients, num_classes, niid, balance, partition)
     config_path = dir_path + "config.json"
     train_path = dir_path + "train/"
     test_path = dir_path + "test/"
+    val_path = dir_path + "val/"
 
-    if check(config_path, train_path, test_path, num_clients, num_classes, niid, balance, partition):
+    if check(config_path, train_path, test_path,val_path, num_clients, num_classes, niid, balance, partition):
         return
 
     # FIX HTTP Error 403: Forbidden
@@ -60,7 +61,6 @@ def generate_mnist(dir_path, num_clients, num_classes, niid, balance, partition)
     dataset_label.extend(testset.targets.cpu().detach().numpy())
     dataset_image = np.array(dataset_image)
     dataset_label = np.array(dataset_label)
-
     # dataset = []
     # for i in range(num_classes):
     #     idx = dataset_label == i
@@ -68,8 +68,10 @@ def generate_mnist(dir_path, num_clients, num_classes, niid, balance, partition)
 
     X, y, statistic = separate_data((dataset_image, dataset_label), num_clients, num_classes, 
                                     niid, balance, partition)
-    train_data, test_data = split_data(X, y)
-    save_file(config_path, train_path, test_path, train_data, test_data, num_clients, num_classes, 
+   
+    train_data, test_data, val_data = split_data(X, y)
+    
+    save_file(config_path, train_path, test_path, val_path, train_data, test_data, val_data, num_clients, num_classes, 
         statistic, niid, balance, partition)
 
 
