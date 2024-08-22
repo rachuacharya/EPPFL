@@ -8,7 +8,8 @@ import pywt
 
 
 class clientCE(Client):
-    def __init__(self, args, id, train_samples, test_samples, ckks, **kwargs):
+    def __init__(self, args, id, train_samples, test_samples, # ckks, 
+                 **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
         self.loss = nn.CrossEntropyLoss()
@@ -17,11 +18,15 @@ class clientCE(Client):
 
         self.init = False
         self.r = args.r  
-        self.ckks_tools = ckks
+        # self.ckks_tools = ckks
         self.transformation = args.transformation
 
         self.alpha = 1
         self.mu = 0.001
+        
+        # Functional Encryption Parameters
+        self.key = None
+        self.random = None
 
     def train(self):
         """
@@ -31,12 +36,6 @@ class clientCE(Client):
 
         start_time = time.time()
 
-        # if self.init:
-        #     self.compressed_model.package_decompresion(self.r)
-        #     self.compressed_model.unpack(self.model,self.device)
-
-        # self.init = True
-        # self.compressed_model.package_de(self.ckks_tools)
         if self.compressed_model.is_Compressed is True:
             self.compressed_model.package_decompresion(self.r ,self.transformation)
         self.compressed_model = copy.deepcopy(
@@ -88,10 +87,8 @@ class clientCE(Client):
         self.compressed_model = Packages()
         self.compressed_model.pack_up(copy.deepcopy(self.model))
         self.compressed_model.package_compresion(self.r, self.transformation)
-        # self.compressed_model.package_en(self.ckks_tools)
+        self.compressed_model.package_en(self.key, self.random)
         
-
-        # self.model.cpu()
 
         self.train_time_cost['num_rounds'] += 1
         self.train_time_cost['total_cost'] += time.time() - start_time

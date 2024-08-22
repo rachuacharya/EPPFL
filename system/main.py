@@ -10,6 +10,8 @@ from torch.nn.functional import dropout
 import torchvision
 
 from flcore.servers.serverce import FedCE
+from flcore.servers.distribution_center import DistServer
+
 
 from flcore.trainmodel.models import *
 
@@ -19,6 +21,14 @@ from utils.mem_utils import MemReporter
 warnings.simplefilter("ignore")
 torch.manual_seed(0)
 
+def assign_client_keys(distServer, AggServer):
+    for c_id in range(distServer.num_clients):
+        AggServer.clients[c_id].key = distServer.client_keys[c_id]
+        AggServer.clients[c_id].random = distServer.random
+    AggServer.sk_agg = distServer.sk_aggregation
+    AggServer.enc_p = distServer.p
+    AggServer.agg_public_keys = distServer.agg_public_keys
+    
 def run(args):
 
     time_list = []
@@ -52,13 +62,17 @@ def run(args):
 
         # Select algorithm
         if args.algorithm == "FedCE":
-            server = FedCE(args, i)
+            AggServer = FedCE(args, i)
+            Distserver = DistServer(args)
             
         else:
             raise NotImplementedError
 
+        # Assign Client keys
+        assign_client_keys(Distserver, AggServer)
+        
         # Train Server
-        server.train()
+        AggServer.train()
 
         time_list.append(time.time()-start)
 

@@ -7,7 +7,8 @@ import math
 import torch
 import matplotlib.pyplot as plt
 from sympy import fwht, ifwht
-# from seal import *
+from mife.single.selective.lwe import FeLWE, _FeLWE_MK, _FeLWE_C
+from utils.misc_utils import encode_floats
 
 global_var = list()
 
@@ -28,7 +29,6 @@ def ifft_2d(x):
 
 def wav_2d(x, signal):
     coeffs = pywt.dwt2(data = x.numpy(), wavelet = signal)
-    # print(f"size of coeff 0 : {np.array(coeffs[0]).shape}")
     return torch.tensor(coeffs[0])
 
 def iwav_2d(x, signal):
@@ -79,6 +79,7 @@ class Packages(object):
         self.Index_of_Item = {}  # Packing Index
         self.Packed_item_en = None
         self.en_shape = None
+        self.Shape_of_Compressed_Item = None
 
     def pack_up(self, client_model):
         """Packing Method for Client Model Parameters"""
@@ -180,7 +181,7 @@ class Packages(object):
     def package_compresion(self, r, transformation):
         temp = []
         self.Volume_of_Compressed_Item = 0
-        for idx in range(self.Packed_item.shape[0]):
+        for idx in range(self.Packed_item.shape[0]):        
             if idx == 0:
                 # Apply Transformation, Flatten Data, and take compressed samples of (size * compression_ratio)
                 if transformation == 'dct':
@@ -226,20 +227,18 @@ class Packages(object):
                         (temp, had_2d(
                             self.Packed_item[idx]).view(-1)[:math.ceil(self.Packages_size * r)].unsqueeze(0)))   
                 self.Volume_of_Compressed_Item += math.ceil(self.Packages_size * r)
-            
 
         self.is_Compressed = True
         # temp = torch.tensor(temp).numpy()
 
         self.Packed_item = temp
-        # print("1",self.Volume_of_Raw_Item)
-        # print("2",self.Volume_of_Compressed_Item)
+        self.Shape_of_Compressed_Item = self.Packed_item.shape
+
 
     def package_decompresion(self, r, transformation):
         res = []
         for idx in range(self.Packed_item.shape[0]):
             temp = torch.zeros(self.Packages_shape, dtype=torch.float32)
-            # print(idx,math.ceil(self.Packages_size * r))
             temp.view(-1)[:math.ceil(self.Packages_size * r)] = self.Packed_item[idx].view(-1)
             if idx == 0:
                 if transformation =='dct':
@@ -268,33 +267,21 @@ class Packages(object):
 
         self.is_Compressed = False
         self.Packed_item = res
-
-    def package_en(self, ckks_tools):
+        
+    
+    
+    def package_en(self, key, random):
         matrix = copy.deepcopy(self.Packed_item.cpu().numpy())
-        # matrix = np.arange(1, n*n+1).reshape(n, n)
-        # print(self.Packed_item.shape)
-        self.en_shape = matrix.shape
-        # print(self.Packed_item.shape)
-        # u_transposed_diagonals = get_transposed_diagonals(u_transposed)
-        # u_transposed_diagonals += 0.00000001  # Prevent is_transparent
-        # # ---------------------------------------------------------
-        # plain_u_diag = []
-        # for row in u_transposed_diagonals:
-        #     plain_u_diag.append(
-        #         ckks_tools["ckks_encoder"].encode(row, ckks_tools["scale"]))
-        plain_matrix = ckks_tools["ckks_encoder"].encode(
-            matrix.flatten(), ckks_tools["ckks_scale"])
-        cipher_matrix = ckks_tools["encryptor"].encrypt(plain_matrix)
-        # ---------------------------------------------------------
-        self.Packed_item_en = cipher_matrix
+        # Flatten and encode client model to int
+        flat_model = encode_floats(matrix.flatten())
+        client_cipher = FeLWE.encrypt(flat_model, key, random)
+        self.Packed_item_en = client_cipher
         self.Packed_item = None
-        print("3",cipher_matrix.size())
-
+        
     def package_de(self, ckks_tools):
         p1 = ckks_tools["decryptor"].decrypt(self.Packed_item_en)
         vec = ckks_tools["ckks_encoder"].decode(p1)
         # ---------------------------------------------------------
         self.Packed_item = torch.from_numpy(copy.deepcopy(
             vec[:self.en_shape[0]*self.en_shape[1]].reshape(self.en_shape)))
-        # print(self.Packed_item.shape)
         self.Packed_item_en = None

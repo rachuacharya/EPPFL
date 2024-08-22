@@ -3,12 +3,13 @@ import os
 import numpy as np
 import h5py
 import copy
-
+from mife.data.matrix import Matrix
 from utils.compresion import *
 
 from utils.data_utils import read_client_data
+from utils.misc_utils import decode_integers, transpose_cipher
 
-from seal import *
+# from seal import *
 
 
 def print_parameters(context):
@@ -68,40 +69,45 @@ class Server(object):
 
         self.times = times
         self.eval_gap = args.eval_gap
+        
+        self.sk_agg = None
+        self.enc_p = None
+        self.agg_public_keys = None
+        self.Compressed_Model_Shape = None
 
         # Strip Enc-Dec
-        parms = EncryptionParameters(scheme_type.ckks)
-        poly_modulus_degree = 8192
-        parms.set_poly_modulus_degree(poly_modulus_degree)
-        parms.set_coeff_modulus(CoeffModulus.Create(
-            poly_modulus_degree, [60, 40, 40, 60]))
-        scale = 2.0**40
-        context = SEALContext(parms)
-        print_parameters(context)
-        encoder = CKKSEncoder(context)
-        slot_count = encoder.slot_count()
-        keygen = KeyGenerator(context)
-        public_key = keygen.create_public_key()
-        secret_key = keygen.secret_key()
-        galois_keys = keygen.create_galois_keys()
-        encryptor = Encryptor(context, public_key)
-        evaluator = Evaluator(context)
-        decryptor = Decryptor(context, secret_key)
-        self.ckks_tools = {
-            "ckks_parms": parms,
-            "ckks_poly_modulus_degree": poly_modulus_degree,
-            "ckks_scale": scale,
-            "ckks_context": context,
-            "ckks_encoder": encoder,
-            "slot_count": slot_count,
-            "keygen": keygen,
-            "public_key": public_key,
-            "secret_key": secret_key,
-            "galois_keys": galois_keys,
-            "encryptor": encryptor,
-            "evaluator": evaluator,
-            "decryptor": decryptor
-        }
+        # parms = EncryptionParameters(scheme_type.ckks)
+        # poly_modulus_degree = 8192
+        # parms.set_poly_modulus_degree(poly_modulus_degree)
+        # parms.set_coeff_modulus(CoeffModulus.Create(
+        #     poly_modulus_degree, [60, 40, 40, 60]))
+        # scale = 2.0**40
+        # context = SEALContext(parms)
+        # print_parameters(context)
+        # encoder = CKKSEncoder(context)
+        # slot_count = encoder.slot_count()
+        # keygen = KeyGenerator(context)
+        # public_key = keygen.create_public_key()
+        # secret_key = keygen.secret_key()
+        # galois_keys = keygen.create_galois_keys()
+        # encryptor = Encryptor(context, public_key)
+        # evaluator = Evaluator(context)
+        # decryptor = Decryptor(context, secret_key)
+        # self.ckks_tools = {
+        #     "ckks_parms": parms,
+        #     "ckks_poly_modulus_degree": poly_modulus_degree,
+        #     "ckks_scale": scale,
+        #     "ckks_context": context,
+        #     "ckks_encoder": encoder,
+        #     "slot_count": slot_count,
+        #     "keygen": keygen,
+        #     "public_key": public_key,
+        #     "secret_key": secret_key,
+        #     "galois_keys": galois_keys,
+        #     "encryptor": encryptor,
+        #     "evaluator": evaluator,
+        #     "decryptor": decryptor
+        # }
 
         self.r = args.r  
         self.global_model_c = Packages()
@@ -119,7 +125,8 @@ class Server(object):
                                id=i,
                                train_samples=len(train_data),
                                test_samples=len(test_data),
-                               ckks=self.ckks_tools,)
+                            #    ckks=self.ckks_tools,
+                               )
             self.clients.append(client)
 
 
@@ -137,6 +144,7 @@ class Server(object):
         for client in self.selected_clients:
             client.compressed_model = self.global_model_c
 
+
     def receive_models(self):
         assert (len(self.selected_clients) > 0)
 
@@ -149,6 +157,7 @@ class Server(object):
             tot_samples += client.train_samples
             self.uploaded_ids.append(client.id)
             self.uploaded_models.append(client.compressed_model)
+            
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
         
@@ -156,49 +165,45 @@ class Server(object):
     def receive_models_c(self):
         assert (len(self.selected_clients) > 0)
 
-        self.uploaded_weights = []
         tot_samples = 0
         self.uploaded_ids = []
         self.uploaded_models = []
         for client in self.selected_clients:
-            self.uploaded_weights.append(client.train_samples)
             tot_samples += client.train_samples
             self.uploaded_ids.append(client.id)
-            # self.uploaded_models.append(copy.deepcopy(
-            #     client.compressed_model.Packed_item))
             self.uploaded_models.append(client.compressed_model.Packed_item_en)
-        for i, w in enumerate(self.uploaded_weights):
-            self.uploaded_weights[i] = w / tot_samples
+            
+        # Save the general shape of received model
+        self.Compressed_Model_Shape = client.compressed_model.Shape_of_Compressed_Item     
+        
 
     def aggregate_parameters_c(self):
         assert (len(self.uploaded_models) > 0)
+        transposed_model = transpose_cipher(self.uploaded_models, self.num_clients)
+        m = list()
+        for wt in range(len(transposed_model)):
+            m.append(FeLWE.decrypt(transposed_model[wt], self.agg_public_keys[wt], self.sk_agg[wt]) %self.enc_p)
+        #  Average Wt and Restore to original shape
+        # avg_wts = torch.tensor(np.array(decode_integers(m)) / self.num_clients)
 
-        temp = None
-        for i in range(len(self.uploaded_models)):
-            if i is 0:
-                plain_w = self.ckks_tools["ckks_encoder"].encode(
-                    self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-                temp = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-                # temp = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp)
-            else:
-                plain_w = self.ckks_tools["ckks_encoder"].encode(
-                    self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-                temp2 = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-                # temp2 = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp2)
-                temp = self.ckks_tools["evaluator"].add(temp, temp2)
-        self.global_model_c.Packed_item_en = temp
+        self.global_model_c.Packed_item = torch.tensor(np.array(decode_integers(m)) / self.num_clients).reshape(self.Compressed_Model_Shape[0], self.Compressed_Model_Shape[1])
 
-        # temp = copy.deepcopy(self.uploaded_models[0])
-        # for item in self.global_model_c.Packed_item:
-        #     item *= 0
-        # self.global_model_c *= 0
-        # temp = self.ckks_tools["evaluator"].multiply(temp, 0)
+           
+        # temp = None
+        # for i in range(len(self.uploaded_models)):
+        #     if i is 0:
+        #         plain_w = self.ckks_tools["ckks_encoder"].encode(
+        #             self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
+        #         temp = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
+        #         # temp = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp)
+        #     else:
+        #         plain_w = self.ckks_tools["ckks_encoder"].encode(
+        #             self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
+        #         temp2 = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
+        #         # temp2 = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp2)
+        #         temp = self.ckks_tools["evaluator"].add(temp, temp2)
+        # self.global_model_c.Packed_item_en = temp
 
-        # for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
-        #     temp = self.ckks_tools["evaluator"].add(
-        #         temp, self.ckks_tools["evaluator"].multiply(client_model, w))
-            # for server_param, client_param in zip(self.global_model_c.Packed_item, client_model.Packed_item):
-            #     server_param += client_param * w
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
@@ -213,8 +218,7 @@ class Server(object):
 
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
-        
-        print(self.global_model_c)
+
 
     def add_parameters(self, w, client_model):
         for client_param in client_model.Packed_item:
@@ -353,3 +357,6 @@ class Server(object):
             else:
                 raise NotImplementedError
         return True
+
+    
+    

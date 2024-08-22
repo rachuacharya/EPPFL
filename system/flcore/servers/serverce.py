@@ -2,7 +2,6 @@ import time
 from flcore.clients.clientce import clientCE
 from flcore.servers.serverbase import Server
 
-
 class FedCE(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
@@ -12,7 +11,6 @@ class FedCE(Server):
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
 
-        # self.load_model()
         self.Budget = []
 
 
@@ -20,6 +18,7 @@ class FedCE(Server):
         for i in range(self.global_rounds+1):
             s_t = time.time()
             self.selected_clients = self.select_clients()
+
             self.send_models()
 
             if i%self.eval_gap == 0:
@@ -30,18 +29,9 @@ class FedCE(Server):
             for client in self.selected_clients:
                 client.train()
 
-            self.receive_models()
-            
-            for j in range(self.num_clients):
-                with open(f'export/uploaded_model_{i}.txt', "a") as export_file:
-                    export_file.write(str(self.uploaded_models[j].Packed_item))
-
-            
-            self.aggregate_parameters()
-            # Strip Enc-Dec
-            # self.receive_models_c()
-            # self.aggregate_parameters_c()
-
+            self.receive_models_c()
+            self.aggregate_parameters_c()
+          
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
