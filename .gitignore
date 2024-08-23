@@ -127,7 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-updated_environment/
+# updated_environment/
 updatedenv/
 
 # Spyder project settings
