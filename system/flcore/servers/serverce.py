@@ -41,7 +41,6 @@ class FedCE(Server):
             # Strip Enc-Dec
             # self.receive_models_c()
             # self.aggregate_parameters_c()
-
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 

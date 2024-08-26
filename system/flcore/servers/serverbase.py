@@ -110,6 +110,8 @@ class Server(object):
         # Strip Enc-Dec
         # self.global_model_c.package_en(self.ckks_tools)
         self.init = False
+        
+        self.min_wt = float('inf')
 
     def set_clients(self, args, clientObj):
         for i in range(self.num_clients):
@@ -213,12 +215,17 @@ class Server(object):
 
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
+        self.global_model_c.Packed_item = torch.tensor(np.array(self.global_model_c.Packed_item.clone()) / self.num_clients)
+        self.min_wt = min(self.global_model_c.Packed_item.min(), self.min_wt)
+        print(self.min_wt)
         
-        print(self.global_model_c)
+        
 
     def add_parameters(self, w, client_model):
         for client_param in client_model.Packed_item:
-            self.global_model_c.Packed_item += client_param * w
+            self.global_model_c.Packed_item += client_param.clone()
+        
+        
 
     def save_global_model(self):
         model_path = os.path.join("models", self.dataset)
