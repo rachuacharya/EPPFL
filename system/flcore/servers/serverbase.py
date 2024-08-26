@@ -3,6 +3,7 @@ import os
 import numpy as np
 import h5py
 import copy
+from datetime import datetime
 
 from utils.compresion import *
 
@@ -253,7 +254,7 @@ class Server(object):
 
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo)
+            file_path = result_path + "{}.h5".format(algo + str(datetime.now()))
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:
