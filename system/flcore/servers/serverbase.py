@@ -5,6 +5,7 @@ import h5py
 import copy
 from mife.data.matrix import Matrix
 from utils.compresion import *
+from datetime import datetime
 
 from utils.data_utils import read_client_data
 from utils.misc_utils import decode_integers, transpose_cipher
@@ -253,7 +254,7 @@ class Server(object):
 
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo)
+            file_path = result_path + "{}.h5".format(algo + str(datetime.now()))
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:
