@@ -8,7 +8,7 @@ import pywt
 
 
 class clientCE(Client):
-    def __init__(self, args, id, train_samples, test_samples, ckks, **kwargs):
+    def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
         self.loss = nn.CrossEntropyLoss()
@@ -17,7 +17,7 @@ class clientCE(Client):
 
         self.init = False
         self.r = args.r  
-        self.ckks_tools = ckks
+        # self.ckks_tools = ckks
         self.transformation = args.transformation
 
         self.alpha = 1
