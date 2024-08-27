@@ -185,25 +185,8 @@ class Server(object):
         for wt in range(len(transposed_model)):
             m.append(FeLWE.decrypt(transposed_model[wt], self.agg_public_keys[wt], self.sk_agg[wt]) %self.enc_p)
         #  Average Wt and Restore to original shape
-        # avg_wts = torch.tensor(np.array(decode_integers(m)) / self.num_clients)
-
-        self.global_model_c.Packed_item = torch.tensor(np.array(decode_integers(m)) / self.num_clients).reshape(self.Compressed_Model_Shape[0], self.Compressed_Model_Shape[1])
-
-           
-        # temp = None
-        # for i in range(len(self.uploaded_models)):
-        #     if i is 0:
-        #         plain_w = self.ckks_tools["ckks_encoder"].encode(
-        #             self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-        #         temp = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-        #         # temp = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp)
-        #     else:
-        #         plain_w = self.ckks_tools["ckks_encoder"].encode(
-        #             self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-        #         temp2 = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-        #         # temp2 = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp2)
-        #         temp = self.ckks_tools["evaluator"].add(temp, temp2)
-        # self.global_model_c.Packed_item_en = temp
+        self.global_model_c.Packed_item = torch.tensor(np.array(decode_integers(m, self.num_clients)) / self.num_clients).reshape(self.Compressed_Model_Shape[0], self.Compressed_Model_Shape[1])
+        print(self.global_model_c.Packed_item)
 
 
     def aggregate_parameters(self):

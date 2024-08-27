@@ -2,13 +2,13 @@ from mife.single.selective.lwe import FeLWE, _FeLWE_MK, _FeLWE_C
 from mife.data.matrix import Matrix
 
 
-def encode_floats(float_list, precision = 7):
+def encode_floats(float_list, precision = 7, shift = 200):
     scaling_factor = 10 ** precision
-    return [int(round(value * scaling_factor)) for value in float_list]
+    return [int(round((value + shift) * scaling_factor)) for value in float_list]
 
-def decode_integers(encoded_list, precision = 7):
+def decode_integers(encoded_list, num_clients, precision = 7, shift = 200):
     scaling_factor = 10 ** precision
-    return [value / scaling_factor for value in encoded_list]
+    return [(value  - shift * num_clients)/ scaling_factor  for value in encoded_list]
 
 def transpose_cipher(uploaded_models, num_clients):
     ar_lst = []
