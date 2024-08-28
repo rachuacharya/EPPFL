@@ -3,9 +3,9 @@ import numpy as np
 import os
 
 
-def average_data(algorithm="", dataset="", goal="", times=10, length=800):
+def average_data(algorithm="", dataset="", goal="", result_ts = "", times=10 ,  length=800):
     test_acc = get_all_results_for_one_algo(
-        algorithm, dataset, goal, times, int(length))
+        algorithm, dataset, goal, times, result_ts, int(length))
     test_acc_data = np.average(test_acc, axis=0)
 
 
@@ -17,14 +17,14 @@ def average_data(algorithm="", dataset="", goal="", times=10, length=800):
     print("mean for best accurancy:", np.mean(max_accurancy))
 
 
-def get_all_results_for_one_algo(algorithm="", dataset="", goal="", times=10, length=800):
+def get_all_results_for_one_algo(algorithm="", dataset="", goal="", result_ts = "", times=10, length=800):
     test_acc = np.zeros((times, length))
     algorithms_list = [algorithm] * times
     for i in range(times):
         file_name = dataset + "_" + \
             algorithms_list[i] + "_" + str(i)
         test_acc[i, :] = np.array(
-            read_data_then_delete(file_name, delete=False))[:length]
+            read_data_then_delete(file_name + result_ts, delete=False))[:length]
 
     return test_acc
 

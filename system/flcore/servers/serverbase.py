@@ -234,10 +234,10 @@ class Server(object):
         result_path = "../results/"
         if not os.path.exists(result_path):
             os.makedirs(result_path)
-
+        self.result_ts = str(datetime.now())
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo + str(datetime.now()))
+            file_path = result_path + "{}.h5".format(algo + self.result_ts )
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:

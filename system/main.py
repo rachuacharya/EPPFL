@@ -86,6 +86,7 @@ def run(args):
                 # goal=args.goal, 
                 goal = "",
                 times=args.times, 
+                result_ts = AggServer.result_ts,
                 length=args.global_rounds/args.eval_gap+1)
 
     print("All done!")

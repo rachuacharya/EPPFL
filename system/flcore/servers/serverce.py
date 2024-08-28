@@ -12,6 +12,7 @@ class FedCE(Server):
         print("Finished creating server and clients.")
 
         self.Budget = []
+        self.result_ts = ""
 
 
     def train(self):
