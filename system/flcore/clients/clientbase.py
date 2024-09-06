@@ -39,13 +39,9 @@ class Client(object):
                 self.has_BatchNorm = True
                 break
 
-
-
         self.sample_rate = self.batch_size / self.train_samples
-
         self.compressed_model = Packages()
-
-
+        
     def load_train_data(self, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size

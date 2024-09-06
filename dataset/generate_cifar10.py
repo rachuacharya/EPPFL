@@ -24,8 +24,10 @@ def generate_cifar10(dir_path, num_clients, num_classes, niid, balance, partitio
     config_path = dir_path + "config.json"
     train_path = dir_path + "train/"
     test_path = dir_path + "test/"
+    val_path = dir_path + "val/"
 
-    if check(config_path, train_path, test_path, num_clients, num_classes, niid, balance, partition):
+
+    if check(config_path, train_path, test_path,val_path, num_clients, num_classes, niid, balance, partition):
         return
         
     # Get Cifar10 data
@@ -63,8 +65,8 @@ def generate_cifar10(dir_path, num_clients, num_classes, niid, balance, partitio
 
     X, y, statistic = separate_data((dataset_image, dataset_label), num_clients, num_classes, 
                                     niid, balance, partition)
-    train_data, test_data = split_data(X, y)
-    save_file(config_path, train_path, test_path, train_data, test_data, num_clients, num_classes, 
+    train_data, test_data, val_data = split_data(X, y)
+    save_file(config_path, train_path, test_path, val_path, train_data, test_data, val_data, num_clients, num_classes, 
         statistic, niid, balance, partition)
 
 
