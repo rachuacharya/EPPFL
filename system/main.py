@@ -63,6 +63,7 @@ def run(args):
         # Select algorithm
         if args.algorithm == "FedCE":
             AggServer = FedCE(args, i)
+            args.num_param = len(AggServer.global_model_c.Packed_item) * len(AggServer.global_model_c.Packed_item[0])
             Distserver = DistServer(args)
             
         else:
