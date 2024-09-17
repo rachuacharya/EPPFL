@@ -16,22 +16,30 @@ class FedCE(Server):
 
 
     def train(self):
+        
         for i in range(self.global_rounds+1):
+            print(f"Preparing Clients of Local Training Round {i}")
+
             s_t = time.time()
             self.selected_clients = self.select_clients()
 
             self.send_models()
+            print(f"Global Model Sent to Clients")
 
             if i%self.eval_gap == 0:
                 print(f"\n-------------Round number: {i}-------------")
                 print("\nEvaluate global model")
                 self.evaluate()
 
-            for client in self.selected_clients:
+            for id, client in enumerate(self.selected_clients):
+                print(f"Training Client: {id}")
                 client.train()
 
+            print(f"Local Training Completed for Round {i}")
             self.receive_models_c()
             self.aggregate_parameters_c()
+
+            print(f"Aggregation Complete for Round {i}")
           
             self.Budget.append(time.time() - s_t)
             print('-'*25, 'time cost', '-'*25, self.Budget[-1])

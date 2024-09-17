@@ -51,7 +51,7 @@ def run(args):
             if args.dataset == "mnist" or args.dataset == "fmnist":
                 args.model = FedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
             elif args.dataset == "cifar10":
-                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=4000).to(args.device)
        
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
