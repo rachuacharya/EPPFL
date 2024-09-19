@@ -1,0 +1,112 @@
+{
+  "build": "py311h6a678d5_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=11.2.0",
+    "libstdcxx-ng >=11.2.0",
+    "python >=3.11,<3.12.0a0"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/ujson-5.10.0-py311h6a678d5_0",
+  "features": "",
+  "files": [
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/INSTALLER",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/LICENSE.txt",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/METADATA",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/RECORD",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/REQUESTED",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/WHEEL",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/direct_url.json",
+    "lib/python3.11/site-packages/ujson-5.10.0.dist-info/top_level.txt",
+    "lib/python3.11/site-packages/ujson.cpython-311-x86_64-linux-gnu.so"
+  ],
+  "fn": "ujson-5.10.0-py311h6a678d5_0.conda",
+  "legacy_bz2_md5": "fee35006602700d17552cc3438732564",
+  "legacy_bz2_size": 163296,
+  "license": "BSD-3-Clause",
+  "license_family": "BSD",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/ujson-5.10.0-py311h6a678d5_0",
+    "type": 1
+  },
+  "md5": "d4d813ee8526686c7014c16ebceccd72",
+  "name": "ujson",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/ujson-5.10.0-py311h6a678d5_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/LICENSE.txt",
+        "path_type": "hardlink",
+        "sha256": "36866344f0a486541bd9800f1a407a056c0c214a82c658f059694daf3dc394d2",
+        "sha256_in_prefix": "36866344f0a486541bd9800f1a407a056c0c214a82c658f059694daf3dc394d2",
+        "size_in_bytes": 5975
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "b7a07b8cfb552e87ddf1ff235080d3c23ab1dd3fdba0e53775ba456e7ba09488",
+        "sha256_in_prefix": "b7a07b8cfb552e87ddf1ff235080d3c23ab1dd3fdba0e53775ba456e7ba09488",
+        "size_in_bytes": 9349
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "dab61be5a159226d1b351e3c25e535b50a3e745b68d301eead30102e6bea2166",
+        "sha256_in_prefix": "dab61be5a159226d1b351e3c25e535b50a3e745b68d301eead30102e6bea2166",
+        "size_in_bytes": 754
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "7c8b059eb9a2628a946a8a37fbbfd5d966f3317d6e4b98148ee5003f106957ba",
+        "sha256_in_prefix": "7c8b059eb9a2628a946a8a37fbbfd5d966f3317d6e4b98148ee5003f106957ba",
+        "size_in_bytes": 105
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "316d11b08a08dc8d079946a8c6e8cb6d351b0efb0ffe951e458473fbd2cd93da",
+        "sha256_in_prefix": "316d11b08a08dc8d079946a8c6e8cb6d351b0efb0ffe951e458473fbd2cd93da",
+        "size_in_bytes": 65
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson-5.10.0.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "201318b952021d68bdc6798c376d9434c10561fd784dc702ee8f6e60f872720d",
+        "sha256_in_prefix": "201318b952021d68bdc6798c376d9434c10561fd784dc702ee8f6e60f872720d",
+        "size_in_bytes": 6
+      },
+      {
+        "_path": "lib/python3.11/site-packages/ujson.cpython-311-x86_64-linux-gnu.so",
+        "path_type": "hardlink",
+        "sha256": "3e1485d10d2fe52e73a3823c73901a3befc43d53bf62194ad3dd0f438c5eb9da",
+        "sha256_in_prefix": "3e1485d10d2fe52e73a3823c73901a3befc43d53bf62194ad3dd0f438c5eb9da",
+        "size_in_bytes": 96520
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "ujson",
+  "sha256": "007f2916a0e9f0248d0a1c62d5a05cfc6599a16c545f147cdf9ccfdae317d7f5",
+  "size": 145024,
+  "subdir": "linux-64",
+  "timestamp": 1717597664783,
+  "track_features": "",
+  "url": "https://repo.anaconda.com/pkgs/main/linux-64/ujson-5.10.0-py311h6a678d5_0.conda",
+  "version": "5.10.0"
+}

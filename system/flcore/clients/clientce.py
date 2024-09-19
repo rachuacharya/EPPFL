@@ -12,9 +12,17 @@ class clientCE(Client):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
         self.loss = nn.CrossEntropyLoss()
+        
         self.optimizer = torch.optim.SGD(
             self.model.parameters(), lr=self.learning_rate)
-
+        
+        if args.dataset == 'cifar10':
+            print("Preparing Model for CIFAR 10:")
+            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate,
+                      momentum=0.9, weight_decay=5e-4)
+            self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=200)
+            
+            
         self.init = False
         self.r = args.r  
         # self.ckks_tools = ckks

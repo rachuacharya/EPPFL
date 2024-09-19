@@ -1,0 +1,67 @@
+{
+  "build": "0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/nvidia/linux-64",
+  "constrains": [],
+  "depends": [
+    "__glibc >=2.17,<3.0.a0",
+    "cuda-version >=12.6,<12.7.0a0",
+    "libgcc-ng >=11.2.0",
+    "libstdcxx-ng >=11.2.0"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/libnvfatbin-12.6.20-0",
+  "features": "",
+  "files": [
+    "lib/libnvfatbin.so.12",
+    "lib/libnvfatbin.so.12.6.20",
+    "targets/x86_64-linux/lib/libnvfatbin.so.12",
+    "targets/x86_64-linux/lib/libnvfatbin.so.12.6.20"
+  ],
+  "fn": "libnvfatbin-12.6.20-0.tar.bz2",
+  "license": "LicenseRef-NVIDIA-End-User-License-Agreement",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/libnvfatbin-12.6.20-0",
+    "type": 1
+  },
+  "md5": "feddefa26fc6b5cdca7b93de6de65ca6",
+  "name": "libnvfatbin",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/libnvfatbin-12.6.20-0.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/libnvfatbin.so.12",
+        "path_type": "softlink",
+        "sha256": "556f01aa8153d583f60095e51a15b67a5485f9e727ab35f7b67a8554abd7b3f5",
+        "size_in_bytes": 2421129
+      },
+      {
+        "_path": "lib/libnvfatbin.so.12.6.20",
+        "path_type": "softlink",
+        "sha256": "556f01aa8153d583f60095e51a15b67a5485f9e727ab35f7b67a8554abd7b3f5",
+        "size_in_bytes": 2421129
+      },
+      {
+        "_path": "targets/x86_64-linux/lib/libnvfatbin.so.12",
+        "path_type": "softlink",
+        "sha256": "556f01aa8153d583f60095e51a15b67a5485f9e727ab35f7b67a8554abd7b3f5",
+        "size_in_bytes": 2421129
+      },
+      {
+        "_path": "targets/x86_64-linux/lib/libnvfatbin.so.12.6.20",
+        "path_type": "hardlink",
+        "sha256": "556f01aa8153d583f60095e51a15b67a5485f9e727ab35f7b67a8554abd7b3f5",
+        "sha256_in_prefix": "556f01aa8153d583f60095e51a15b67a5485f9e727ab35f7b67a8554abd7b3f5",
+        "size_in_bytes": 2421129
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "5cc3fe938e483357ab819dd9a9280259c967d3d309d5066f8ab0cb98d395d697",
+  "size": 909338,
+  "subdir": "linux-64",
+  "timestamp": 1720729039737,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/nvidia/linux-64/libnvfatbin-12.6.20-0.tar.bz2",
+  "version": "12.6.20"
+}
