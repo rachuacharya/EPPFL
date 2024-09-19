@@ -8,7 +8,7 @@ import pywt
 
 
 class clientCE(Client):
-    def __init__(self, args, id, train_samples, test_samples, ckks, **kwargs):
+    def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
         self.loss = nn.CrossEntropyLoss()
@@ -17,11 +17,12 @@ class clientCE(Client):
 
         self.init = False
         self.r = args.r  
-        self.ckks_tools = ckks
+        # self.ckks_tools = ckks
         self.transformation = args.transformation
 
         self.alpha = 1
         self.mu = 0.001
+        self.epochs = args.epochs
 
     def train(self):
         """
@@ -50,40 +51,41 @@ class clientCE(Client):
         #  Create a deep copy of the model to use as a fixed reference for regularization during training.
         fixed_model = copy.deepcopy(self.model)
 
-        max_local_steps = self.local_steps
+        for epoch in range(self.epochs):
+            max_local_steps = self.local_steps
 
-        for step in range(max_local_steps):
-            for i, (x, y) in enumerate(trainloader):
-                # Move data to specified Device
-                if type(x) == type([]):
-                    x[0] = x[0].to(self.device)
-                else:
-                    x = x.to(self.device)
-                y = y.to(self.device)
+            for step in range(max_local_steps):
+                for i, (x, y) in enumerate(trainloader):
+                    # Move data to specified Device
+                    if type(x) == type([]):
+                        x[0] = x[0].to(self.device)
+                    else:
+                        x = x.to(self.device)
+                    y = y.to(self.device)
 
-                # Zeros the gradients of the optimizer.
-                self.optimizer.zero_grad()
+                    # Zeros the gradients of the optimizer.
+                    self.optimizer.zero_grad()
 
-                # Pass the input x through the model to get the output.
-                output = self.model(x)
+                    # Pass the input x through the model to get the output.
+                    output = self.model(x)
 
-                # Compute the cross-entropy loss 
-                ce_loss = self.loss(output, y)
+                    # Compute the cross-entropy loss 
+                    ce_loss = self.loss(output, y)
 
-                # Compute the regularization loss
-                reg_loss = 0
-                fixed_params = {n: p for n, p in fixed_model.named_parameters()}
-                for n, p in self.model.named_parameters():
-                    reg_loss += ((p - fixed_params[n].detach()) ** 2).sum()
+                    # Compute the regularization loss
+                    reg_loss = 0
+                    fixed_params = {n: p for n, p in fixed_model.named_parameters()}
+                    for n, p in self.model.named_parameters():
+                        reg_loss += ((p - fixed_params[n].detach()) ** 2).sum()
 
-                # Combine the cross-entropy loss and regularization loss into a total loss.
-                loss = self.alpha * ce_loss + 0.5 * self.mu * reg_loss
+                    # Combine the cross-entropy loss and regularization loss into a total loss.
+                    loss = self.alpha * ce_loss + 0.5 * self.mu * reg_loss
 
-                # Backpropagate the loss and updates the model parameters using the optimizer.
-                loss.backward()
+                    # Backpropagate the loss and updates the model parameters using the optimizer.
+                    loss.backward()
 
-                # Update the model parameters using the computed gradients.
-                self.optimizer.step()
+                    # Update the model parameters using the computed gradients.
+                    self.optimizer.step()
 
         self.compressed_model = Packages()
         self.compressed_model.pack_up(copy.deepcopy(self.model))

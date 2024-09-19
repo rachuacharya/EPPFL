@@ -32,9 +32,9 @@ class FedCE(Server):
 
             self.receive_models()
             
-            for j in range(self.num_clients):
-                with open(f'export/uploaded_model_{i}.txt', "a") as export_file:
-                    export_file.write(str(self.uploaded_models[j].Packed_item))
+            # for j in range(self.num_clients):
+            #     with open(f'export/uploaded_model_{i}.txt', "a") as export_file:
+            #         export_file.write(str(self.uploaded_models[j].Packed_item))
 
             
             self.aggregate_parameters()

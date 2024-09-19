@@ -166,3 +166,4 @@ cython_debug/
 export/
 
 updated_environment.yaml
+.updatedenv/bin/

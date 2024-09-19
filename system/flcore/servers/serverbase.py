@@ -3,12 +3,13 @@ import os
 import numpy as np
 import h5py
 import copy
+from datetime import datetime
 
 from utils.compresion import *
 
 from utils.data_utils import read_client_data
 
-from seal import *
+# from seal import *
 
 
 def print_parameters(context):
@@ -70,38 +71,38 @@ class Server(object):
         self.eval_gap = args.eval_gap
 
         # Strip Enc-Dec
-        parms = EncryptionParameters(scheme_type.ckks)
-        poly_modulus_degree = 8192
-        parms.set_poly_modulus_degree(poly_modulus_degree)
-        parms.set_coeff_modulus(CoeffModulus.Create(
-            poly_modulus_degree, [60, 40, 40, 60]))
-        scale = 2.0**40
-        context = SEALContext(parms)
-        print_parameters(context)
-        encoder = CKKSEncoder(context)
-        slot_count = encoder.slot_count()
-        keygen = KeyGenerator(context)
-        public_key = keygen.create_public_key()
-        secret_key = keygen.secret_key()
-        galois_keys = keygen.create_galois_keys()
-        encryptor = Encryptor(context, public_key)
-        evaluator = Evaluator(context)
-        decryptor = Decryptor(context, secret_key)
-        self.ckks_tools = {
-            "ckks_parms": parms,
-            "ckks_poly_modulus_degree": poly_modulus_degree,
-            "ckks_scale": scale,
-            "ckks_context": context,
-            "ckks_encoder": encoder,
-            "slot_count": slot_count,
-            "keygen": keygen,
-            "public_key": public_key,
-            "secret_key": secret_key,
-            "galois_keys": galois_keys,
-            "encryptor": encryptor,
-            "evaluator": evaluator,
-            "decryptor": decryptor
-        }
+        # parms = EncryptionParameters(scheme_type.ckks)
+        # poly_modulus_degree = 8192
+        # parms.set_poly_modulus_degree(poly_modulus_degree)
+        # parms.set_coeff_modulus(CoeffModulus.Create(
+        #     poly_modulus_degree, [60, 40, 40, 60]))
+        # scale = 2.0**40
+        # context = SEALContext(parms)
+        # print_parameters(context)
+        # encoder = CKKSEncoder(context)
+        # slot_count = encoder.slot_count()
+        # keygen = KeyGenerator(context)
+        # public_key = keygen.create_public_key()
+        # secret_key = keygen.secret_key()
+        # galois_keys = keygen.create_galois_keys()
+        # encryptor = Encryptor(context, public_key)
+        # evaluator = Evaluator(context)
+        # decryptor = Decryptor(context, secret_key)
+        # self.ckks_tools = {
+        #     "ckks_parms": parms,
+        #     "ckks_poly_modulus_degree": poly_modulus_degree,
+        #     "ckks_scale": scale,
+        #     "ckks_context": context,
+        #     "ckks_encoder": encoder,
+        #     "slot_count": slot_count,
+        #     "keygen": keygen,
+        #     "public_key": public_key,
+        #     "secret_key": secret_key,
+        #     "galois_keys": galois_keys,
+        #     "encryptor": encryptor,
+        #     "evaluator": evaluator,
+        #     "decryptor": decryptor
+        # }
 
         self.r = args.r  
         self.global_model_c = Packages()
@@ -121,7 +122,8 @@ class Server(object):
                                id=i,
                                train_samples=len(train_data),
                                test_samples=len(test_data),
-                               ckks=self.ckks_tools,)
+                            #    ckks=self.ckks_tools,
+                               )
             self.clients.append(client)
 
 
@@ -204,12 +206,7 @@ class Server(object):
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
-        
-        print(dir(self.uploaded_models[0]))
-        print(self.uploaded_models[0].Packed_item)
-        print(len(self.uploaded_models))
-        print(self.uploaded_weights)
-
+    
         self.global_model_c = self.uploaded_models[0]
         self.global_model_c.Packed_item = self.global_model_c.Packed_item.zero_()
 
@@ -217,7 +214,8 @@ class Server(object):
             self.add_parameters(w, client_model)
         self.global_model_c.Packed_item = torch.tensor(np.array(self.global_model_c.Packed_item.clone()) / self.num_clients)
         self.min_wt = min(self.global_model_c.Packed_item.min(), self.min_wt)
-        print(self.min_wt)
+        
+        print(f'Minimum Weight: {self.min_wt}')
         
         
 
@@ -256,7 +254,7 @@ class Server(object):
 
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo)
+            file_path = result_path + "{}.h5".format(algo + str(datetime.now()))
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:

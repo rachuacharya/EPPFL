@@ -45,9 +45,67 @@ class FedAvgCNN(nn.Module):
         return out
 
 
+
+class DeepCNN(nn.Module):
+    def __init__(self, in_features=3, num_classes=10):
+        super().__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_features, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(64),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(128),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(128, 256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(256),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        self.conv4 = nn.Sequential(
+            nn.Conv2d(256, 512, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.BatchNorm2d(512),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        
+        # After 4 layers of pooling, the size will be (32/2^4) x (32/2^4) = 2 x 2
+        self.fc1 = nn.Sequential(
+            nn.Linear(512 * 2 * 2, 512),  # Update input size here
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.5)
+        )
+        self.fc2 = nn.Linear(512, num_classes)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = x.view(x.size(0), -1)  # Flatten the output
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc1(x)
+        return self.fc2(x)
+
+
 # https://github.com/katsura-jp/fedavg.pytorch/blob/master/src/models/mlp.py
 class FedAvgMLP(nn.Module):
-    def __init__(self, in_features=784, num_classes=10, hidden_dim=200):
+    def __init__(self, in_features=3072, num_classes=10, hidden_dim=200):
         super().__init__()
         self.fc1 = nn.Linear(in_features, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, num_classes)
