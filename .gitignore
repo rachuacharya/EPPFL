@@ -165,5 +165,5 @@ cython_debug/
 # Exported Models
 export/
 
-updated_environment.yaml
-# updatedenv/bin/
+# updated_environment.yaml
+updatedenv/
