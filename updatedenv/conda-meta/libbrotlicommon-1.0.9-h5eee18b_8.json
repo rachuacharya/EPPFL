@@ -1,0 +1,69 @@
+{
+  "build": "h5eee18b_8",
+  "build_number": 8,
+  "channel": "https://repo.anaconda.com/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=11.2.0"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/libbrotlicommon-1.0.9-h5eee18b_8",
+  "features": "",
+  "files": [
+    "lib/libbrotlicommon.so",
+    "lib/libbrotlicommon.so.1",
+    "lib/libbrotlicommon.so.1.0.9",
+    "lib/pkgconfig/libbrotlicommon.pc"
+  ],
+  "fn": "libbrotlicommon-1.0.9-h5eee18b_8.conda",
+  "legacy_bz2_md5": "3ff70744e396b1af69656c574b05c3b9",
+  "legacy_bz2_size": 66940,
+  "license": "MIT",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/libbrotlicommon-1.0.9-h5eee18b_8",
+    "type": 1
+  },
+  "md5": "1e9edf233add622312356a40a7d0f8de",
+  "name": "libbrotlicommon",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/libbrotlicommon-1.0.9-h5eee18b_8.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/libbrotlicommon.so",
+        "path_type": "softlink",
+        "sha256": "84cbab1da149f370f0398c5aa90cf23b8afbc31c7bf2efdf2c0a90caef6364b7",
+        "size_in_bytes": 139152
+      },
+      {
+        "_path": "lib/libbrotlicommon.so.1",
+        "path_type": "softlink",
+        "sha256": "84cbab1da149f370f0398c5aa90cf23b8afbc31c7bf2efdf2c0a90caef6364b7",
+        "size_in_bytes": 139152
+      },
+      {
+        "_path": "lib/libbrotlicommon.so.1.0.9",
+        "path_type": "hardlink",
+        "sha256": "84cbab1da149f370f0398c5aa90cf23b8afbc31c7bf2efdf2c0a90caef6364b7",
+        "sha256_in_prefix": "84cbab1da149f370f0398c5aa90cf23b8afbc31c7bf2efdf2c0a90caef6364b7",
+        "size_in_bytes": 139152
+      },
+      {
+        "_path": "lib/pkgconfig/libbrotlicommon.pc",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/croot/brotli-split_1714483155106/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac",
+        "sha256": "586d9f4e7a7f8aa57c091d7de6f8544a767312301c4e33fb6b117268ce9f1ac0",
+        "sha256_in_prefix": "9002b99fd73a89130d2076f9254c9332abb3bd194fbad15a8ad5078b68ce1b87",
+        "size_in_bytes": 760
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "libbrotlicommon",
+  "sha256": "cca342e786b50dbe681dd59a47db82fd50da0e8bb211d6c0e9d419a21a72820d",
+  "size": 70255,
+  "subdir": "linux-64",
+  "timestamp": 1714483221853,
+  "track_features": "",
+  "url": "https://repo.anaconda.com/pkgs/main/linux-64/libbrotlicommon-1.0.9-h5eee18b_8.conda",
+  "version": "1.0.9"
+}

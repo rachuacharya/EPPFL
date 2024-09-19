@@ -1,0 +1,44 @@
+{
+  "build": "0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/nvidia/linux-64",
+  "constrains": [],
+  "depends": [
+    "cuda-cudart >=12.4.99",
+    "cuda-nvrtc >=12.4.99",
+    "cuda-opencl >=12.4.99",
+    "libcublas >=12.4.2.65",
+    "libcufft >=11.2.0.44",
+    "libcufile >=1.9.0.20",
+    "libcurand >=10.3.5.119",
+    "libcusolver >=11.6.0.99",
+    "libcusparse >=12.3.0.142",
+    "libnpp >=12.2.5.2",
+    "libnvfatbin >=12.4.99",
+    "libnvjitlink >=12.4.99",
+    "libnvjpeg >=12.3.1.89"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/cuda-libraries-12.4.0-0",
+  "features": "",
+  "files": [],
+  "fn": "cuda-libraries-12.4.0-0.tar.bz2",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/cuda-libraries-12.4.0-0",
+    "type": 1
+  },
+  "md5": "e1f3474ec98d3a4e17d791389c07e769",
+  "name": "cuda-libraries",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/cuda-libraries-12.4.0-0.tar.bz2",
+  "paths_data": {
+    "paths": [],
+    "paths_version": 1
+  },
+  "requested_spec": "cuda-libraries",
+  "sha256": "6d90b85a03c23befd723bf59e21815c09728706a2dde405c9d621856e94d3d0d",
+  "size": 1939,
+  "subdir": "linux-64",
+  "timestamp": 1709167750873,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/nvidia/linux-64/cuda-libraries-12.4.0-0.tar.bz2",
+  "version": "12.4.0"
+}

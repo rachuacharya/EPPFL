@@ -1,0 +1,32 @@
+{
+  "build": "0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/nvidia/linux-64",
+  "constrains": [],
+  "depends": [
+    "cuda-libraries >=12.4.0"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/cuda-runtime-12.4.0-0",
+  "features": "",
+  "files": [],
+  "fn": "cuda-runtime-12.4.0-0.tar.bz2",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/cuda-runtime-12.4.0-0",
+    "type": 1
+  },
+  "md5": "db9a359fd3a6c62d257e120a078cba27",
+  "name": "cuda-runtime",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/cuda-runtime-12.4.0-0.tar.bz2",
+  "paths_data": {
+    "paths": [],
+    "paths_version": 1
+  },
+  "requested_spec": "cuda-runtime",
+  "sha256": "8d6b60be1ba607b180cf2d1a1b6adff6cf61edec79dd193c1a12cde940d641ea",
+  "size": 1837,
+  "subdir": "linux-64",
+  "timestamp": 1709167844463,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/nvidia/linux-64/cuda-runtime-12.4.0-0.tar.bz2",
+  "version": "12.4.0"
+}

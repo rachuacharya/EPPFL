@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3. CUPTI Checkpoint API &mdash; Cupti 12.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/omni-style.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/api-styles.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/mermaid-init.js"></script>
+        <script src="../_static/design-tabs.js"></script>
+        <script src="../_static/version.js"></script>
+        <script src="../_static/social-media.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.4. CUPTI Event API" href="group__CUPTI__EVENT__API.html" />
+    <link rel="prev" title="5.2. CUPTI Callback API" href="group__CUPTI__CALLBACK__API.html" />
+ 
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+  <a href="../index.html">
+  <img src="../_static/Logo_and_CUDA.png" class="logo" alt="Logo"/>
+</a>
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">CUPTI</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/overview.html">Overview</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../release-notes/release-topic.html">1. Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../main/main.html">2. Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../library-support/library-support.html">3. Library support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../special-configurations/special-configurations.html">4. Special Configurations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">5. Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__ACTIVITY__API.html">5.1. CUPTI Activity API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__CALLBACK__API.html">5.2. CUPTI Callback API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5.3. CUPTI Checkpoint API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#macros">5.3.1. Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__EVENT__API.html">5.4. CUPTI Event API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__METRIC__API.html">5.5. CUPTI Metric API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__PCSAMPLING__API.html">5.6. CUPTI PC Sampling API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__PCSAMPLING__UTILITY.html">5.7. CUPTI PC Sampling Utility API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__PROFILER__API.html">5.8. CUPTI Profiling API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__RESULT__API.html">5.9. CUPTI Result Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__SASS__METRICS__API.html">5.10. CUPTI SASS Metrics API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group__CUPTI__VERSION__API.html">5.11. CUPTI Version</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data-structures.html">6. Data Structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespaces.html">7. Namespaces</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../copyright-and-licenses/index.html">Copyright and Licenses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notices-header/notices-header.html">Notices</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Cupti</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+
+
+<li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+    <li><a href="modules.html"><span class="section-number">5. </span>Modules</a> &raquo;</li>
+<li><span class="section-number">5.3. </span>CUPTI Checkpoint API</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+<li class="wy-breadcrumbs-aside">
+
+
+  <span>v2024.1.1 |</span>
+
+
+
+  <a href="https://developer.nvidia.com/cupti" class="reference external">Archive</a>
+
+
+  <span>&nbsp;</span>
+</li>
+
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cupti-checkpoint-api">
+<h1><span class="section-number">5.3. </span>CUPTI Checkpoint API<a class="headerlink" href="#cupti-checkpoint-api" title="Permalink to this headline"></a></h1>
+<p id="group__cupti__checkpoint__api">Functions, types, and enums that implement the CUPTI Checkpoint API. </p>
+<p class="rubric-h4 rubric">Data Structures</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="structNV_1_1Cupti_1_1Checkpoint_1_1CUpti__Checkpoint.html#structnv_1_1cupti_1_1checkpoint_1_1cupti__checkpoint"><span class="std std-ref">NV::Cupti::Checkpoint::CUpti_Checkpoint</span></a>: Configuration and handle for a CUPTI Checkpoint.</p></li>
+</ul>
+<p class="rubric-h4 rubric">Macros</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#group__cupti__checkpoint__api_1ga5315ee6df35d580615287edb7e0be871"><span class="std std-ref">CUpti_Checkpoint_STRUCT_SIZE</span></a></p></li>
+</ul>
+<p class="rubric-h4 rubric">Enumerations</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespaceNV_1_1Cupti_1_1Checkpoint.html#group__cupti__checkpoint__api_1ga4d49e28d43be23e549b827292271b56d"><span class="std std-ref">NV::Cupti::Checkpoint::CUpti_CheckpointOptimizations</span></a>: Specifies optimization options for a checkpoint, may be OR'd together to specify multiple options.</p></li>
+</ul>
+<p class="rubric-h4 rubric">Functions</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespaceNV_1_1Cupti_1_1Checkpoint.html#group__cupti__checkpoint__api_1ga8aaeedd9f88919cdc35baa0a10492c09"><span class="std std-ref">NV::Cupti::Checkpoint::cuptiCheckpointFree(CUpti_Checkpoint *const handle)</span></a>: Free the backing data for a checkpoint.</p></li>
+<li><p><a class="reference internal" href="namespaceNV_1_1Cupti_1_1Checkpoint.html#group__cupti__checkpoint__api_1ga21cdc23dcb04894c0a59cb1fd4da430f"><span class="std std-ref">NV::Cupti::Checkpoint::cuptiCheckpointRestore(CUpti_Checkpoint *const handle)</span></a>: Restore a checkpoint to the device associated with its context.</p></li>
+<li><p><a class="reference internal" href="namespaceNV_1_1Cupti_1_1Checkpoint.html#group__cupti__checkpoint__api_1ga90ea5f5068de6135df6b409fa09f947b"><span class="std std-ref">NV::Cupti::Checkpoint::cuptiCheckpointSave(CUpti_Checkpoint *const handle)</span></a>: Initialize and save a checkpoint of the device state associated with the handle context.</p></li>
+</ul>
+<section id="macros">
+<h2><span class="section-number">5.3.1. </span>Macros<a class="headerlink" href="#macros" title="Permalink to this headline"></a></h2>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.CUpti_Checkpoint_STRUCT_SIZE">
+<span class="target" id="group__cupti__checkpoint__api_1ga5315ee6df35d580615287edb7e0be871"></span><span class="sig-name descname"><span class="n"><span class="pre">CUpti_Checkpoint_STRUCT_SIZE</span></span></span><a class="headerlink" href="#c.CUpti_Checkpoint_STRUCT_SIZE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2024, NVIDIA Corporation &amp; Affiliates. All rights reserved.
+      <span class="lastupdated">Last updated on Mar 15, 2024.
+      </span></p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+
+
+</body>
+</html>

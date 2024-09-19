@@ -1,0 +1,44 @@
+{
+  "build": "hc786d27_6",
+  "build_number": 6,
+  "channel": "https://conda.anaconda.org/pytorch/linux-64",
+  "constrains": [],
+  "depends": [
+    "cuda-cudart >=12.4,<12.5",
+    "cuda-cupti >=12.4,<12.5",
+    "cuda-libraries >=12.4,<12.5",
+    "cuda-nvrtc >=12.4,<12.5",
+    "cuda-nvtx >=12.4,<12.5",
+    "cuda-runtime >=12.4,<12.5",
+    "libcublas >=12.4.2.65,<12.4.5.8",
+    "libcufft >=11.2.0.44,<11.2.1.3",
+    "libcusolver >=11.6.0.99,<11.6.1.9",
+    "libcusparse >=12.3.0.142,<12.3.1.170",
+    "libnpp >=12.2.5.2,<12.2.5.30",
+    "libnvjitlink >=12.4.99,<12.4.127",
+    "libnvjpeg >=12.3.1.89,<12.3.1.117"
+  ],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/pytorch-cuda-12.4-hc786d27_6",
+  "features": "",
+  "files": [],
+  "fn": "pytorch-cuda-12.4-hc786d27_6.tar.bz2",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/pytorch-cuda-12.4-hc786d27_6",
+    "type": 1
+  },
+  "md5": "294df2aee019b0e314713842d46e6b65",
+  "name": "pytorch-cuda",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/pytorch-cuda-12.4-hc786d27_6.tar.bz2",
+  "paths_data": {
+    "paths": [],
+    "paths_version": 1
+  },
+  "requested_spec": "pytorch-cuda",
+  "sha256": "fb74f81c75392c58cad8ff9c5a3366f8224e4d9cb77501cb50f7abe39e1a2ddb",
+  "size": 7180,
+  "subdir": "linux-64",
+  "timestamp": 1713891951516,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/pytorch/linux-64/pytorch-cuda-12.4-hc786d27_6.tar.bz2",
+  "version": "12.4"
+}

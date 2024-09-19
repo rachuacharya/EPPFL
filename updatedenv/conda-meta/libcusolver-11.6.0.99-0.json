@@ -1,0 +1,62 @@
+{
+  "build": "0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/nvidia/linux-64",
+  "constrains": [],
+  "depends": [],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/libcusolver-11.6.0.99-0",
+  "features": "",
+  "files": [
+    "lib/libcusolver.so.11",
+    "lib/libcusolver.so.11.6.0.99",
+    "lib/libcusolverMg.so.11",
+    "lib/libcusolverMg.so.11.6.0.99"
+  ],
+  "fn": "libcusolver-11.6.0.99-0.tar.bz2",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/libcusolver-11.6.0.99-0",
+    "type": 1
+  },
+  "md5": "3aa936851b8594bdcb334cf913401d3a",
+  "name": "libcusolver",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/libcusolver-11.6.0.99-0.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/libcusolver.so.11",
+        "path_type": "softlink",
+        "sha256": "6019a822064b79763d893a0d6ef2dfef02a8008e55092c368fb1d45d97c3201b",
+        "size_in_bytes": 120545873
+      },
+      {
+        "_path": "lib/libcusolver.so.11.6.0.99",
+        "path_type": "hardlink",
+        "sha256": "6019a822064b79763d893a0d6ef2dfef02a8008e55092c368fb1d45d97c3201b",
+        "sha256_in_prefix": "6019a822064b79763d893a0d6ef2dfef02a8008e55092c368fb1d45d97c3201b",
+        "size_in_bytes": 120545873
+      },
+      {
+        "_path": "lib/libcusolverMg.so.11",
+        "path_type": "softlink",
+        "sha256": "652d88504c74b27bc6ec1552e838f0d488bb5ed0fe4edcace28696eb9d1a8d5e",
+        "size_in_bytes": 82588289
+      },
+      {
+        "_path": "lib/libcusolverMg.so.11.6.0.99",
+        "path_type": "hardlink",
+        "sha256": "652d88504c74b27bc6ec1552e838f0d488bb5ed0fe4edcace28696eb9d1a8d5e",
+        "sha256_in_prefix": "652d88504c74b27bc6ec1552e838f0d488bb5ed0fe4edcace28696eb9d1a8d5e",
+        "size_in_bytes": 82588289
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "libcusolver",
+  "sha256": "e7565e47d31e637ee64c6fd8598430ff0b0cba10845e12fefd553a3470f0b4c3",
+  "size": 119843502,
+  "subdir": "linux-64",
+  "timestamp": 1709085957226,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/nvidia/linux-64/libcusolver-11.6.0.99-0.tar.bz2",
+  "version": "11.6.0.99"
+}

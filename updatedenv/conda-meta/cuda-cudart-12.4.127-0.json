@@ -1,0 +1,47 @@
+{
+  "build": "0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/nvidia/linux-64",
+  "constrains": [],
+  "depends": [],
+  "extracted_package_dir": "/home/rachu/anaconda3/pkgs/cuda-cudart-12.4.127-0",
+  "features": "",
+  "files": [
+    "lib/libcudart.so.12",
+    "lib/libcudart.so.12.4.127"
+  ],
+  "fn": "cuda-cudart-12.4.127-0.tar.bz2",
+  "link": {
+    "source": "/home/rachu/anaconda3/pkgs/cuda-cudart-12.4.127-0",
+    "type": 1
+  },
+  "md5": "3f783f2954e59ff9f8df2b2dbc854266",
+  "name": "cuda-cudart",
+  "package_tarball_full_path": "/home/rachu/anaconda3/pkgs/cuda-cudart-12.4.127-0.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "lib/libcudart.so.12",
+        "path_type": "softlink",
+        "sha256": "bb6d0f714b13ea2dff5a7315430412147634af8b186504a96b2656fda6d372c8",
+        "size_in_bytes": 724993
+      },
+      {
+        "_path": "lib/libcudart.so.12.4.127",
+        "path_type": "hardlink",
+        "sha256": "bb6d0f714b13ea2dff5a7315430412147634af8b186504a96b2656fda6d372c8",
+        "sha256_in_prefix": "bb6d0f714b13ea2dff5a7315430412147634af8b186504a96b2656fda6d372c8",
+        "size_in_bytes": 724993
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "cuda-cudart",
+  "sha256": "5b229895b7684dfe8f923742036e15ebf9a6a0d304aa32e3792c12931a94c82b",
+  "size": 203174,
+  "subdir": "linux-64",
+  "timestamp": 1710544194723,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/nvidia/linux-64/cuda-cudart-12.4.127-0.tar.bz2",
+  "version": "12.4.127"
+}
