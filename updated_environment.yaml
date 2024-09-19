@@ -4,6 +4,7 @@ channels:
   - nvidia
   - defaults
 dependencies:
+  - python=3.11
   - _libgcc_mutex
   - blas
   - bottleneck
@@ -86,13 +87,11 @@ dependencies:
   - pip
   - ply
   - pycparser
-  - pymife
   - pyopenssl
   - pyparsing
   - pyqt
   - pyqt5-sip
   - pysocks
-  - python=3.11
   - python-dateutil
   - pytorch
   - pytorch-cuda
