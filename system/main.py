@@ -52,12 +52,13 @@ def run(args):
                 args.model = FedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
             elif args.dataset == "cifar10":
                 # args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
-                # args.model = DeepCNN(in_features=3, num_classes=args.num_classes).to(args.device)
+                args.model = DeepCNN(in_features=3, num_classes=args.num_classes).to(args.device)
                 # args.model = FedAvgMLP().to(args.device)
-                args.model = ResNet(BasicBlock, [2,2,2,2], num_classes = 10).to(args.device)
+                # args.model = ResNet(BasicBlock, [2,2,2,2], num_classes = 10).to(args.device)
        
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
+            print("Using Resnet Model...")
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
 
         else:
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('-eg', "--eval_gap", type=int, default=1,
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='models')
-    parser.add_argument('-r', "--r", type=float, default=0.00004)
+    parser.add_argument('-r', "--r", type=float, default=0.00003)
     parser.add_argument('-tf', "--transformation", type=str, default = 'dct')
 
     
