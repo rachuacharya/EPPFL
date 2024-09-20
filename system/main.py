@@ -51,7 +51,10 @@ def run(args):
             if args.dataset == "mnist" or args.dataset == "fmnist":
                 args.model = FedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
             elif args.dataset == "cifar10":
-                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=4000).to(args.device)
+                # args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+                args.model = DeepCNN(in_features=3, num_classes=args.num_classes).to(args.device)
+                # args.model = FedAvgMLP().to(args.device)
+                # args.model = ResNet(BasicBlock, [2,2,2,2], num_classes = 10).to(args.device)
        
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
@@ -64,7 +67,9 @@ def run(args):
         if args.algorithm == "FedCE":
             AggServer = FedCE(args, i)
             args.num_param = len(AggServer.global_model_c.Packed_item) * len(AggServer.global_model_c.Packed_item[0])
+            print(f"Number of Param:{args.num_param}")
             Distserver = DistServer(args)
+
             
         else:
             raise NotImplementedError
@@ -124,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument('-eg', "--eval_gap", type=int, default=1,
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='models')
-    parser.add_argument('-r', "--r", type=float, default=0.00005)
+    parser.add_argument('-r', "--r", type=float, default=0.00004)
     parser.add_argument('-tf', "--transformation", type=str, default = 'dct')
 
     

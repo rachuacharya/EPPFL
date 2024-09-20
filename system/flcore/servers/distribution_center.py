@@ -15,7 +15,7 @@ class DistServer(object):
         # Set up the main attributes
         self.num_clients = args.num_clients
         self.num_weights = args.num_param
-        self.msg_bit, self.func_bit = (4, 4)
+        self.msg_bit, self.func_bit = (15, 15)
         self.l = self.num_weights
         self.n = self.num_weights
         

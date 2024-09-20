@@ -81,7 +81,10 @@ class FeLWE:
             n = max(l, 64)
 
         # q = getPrime(k.bit_length() * 2 + n.bit_length() * 15 + 10)
+        
         alpha = 1 / (k * k * (n * q.bit_length()) ** 7)
+        # print(f)
+        print(f'p: {p}, \n q: {q} \n alpha: {alpha}')
 
         if q < math.sqrt(n) / alpha:
             raise Exception("q too small")
