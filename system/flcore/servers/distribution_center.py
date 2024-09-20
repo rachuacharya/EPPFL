@@ -15,7 +15,7 @@ class DistServer(object):
         # Set up the main attributes
         self.num_clients = args.num_clients
         self.num_weights = args.num_param
-        self.msg_bit, self.func_bit = (15, 15)
+        self.msg_bit, self.func_bit = (4, 4)
         self.l = self.num_weights
         self.n = self.num_weights
         
@@ -27,13 +27,10 @@ class DistServer(object):
         self.p = getPrime((self.msg_bit + self.func_bit) * 2 + self.l.bit_length() + 1)
         self.q = getPrime(self.p.bit_length() + self.n.bit_length() * 2 + (self.msg_bit + self.func_bit) + self.l.bit_length() // 2)
         self.G = ZmodR(self.q)
-
-        print(self.p, self.q)
         
         m = 2 * (self.l + self.n + 1) * self.q.bit_length() + 1
         self.A = Matrix([[self.G(random.randrange(self.q)) for _ in range(self.n)] for _ in range(m)])
 
-        print(m)
         # Generate Client Keys
         self.client_keys = dict()
         print(f"Generating Client Keys ....")
