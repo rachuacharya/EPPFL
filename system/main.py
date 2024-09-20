@@ -112,7 +112,7 @@ if __name__ == "__main__":
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='models')
     parser.add_argument('-r', "--r", type=float, default=0.00005)
     parser.add_argument('-tf', "--transformation", type=str, default = 'dct')
-    parser.add_argument('-ep', "--epochs", type=int, default=11)
+    parser.add_argument('-ep', "--epochs", type=int, default=1)
 
     
 
