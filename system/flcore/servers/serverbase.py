@@ -221,7 +221,7 @@ class Server(object):
 
     def add_parameters(self, w, client_model):
         for client_param in client_model.Packed_item:
-            self.global_model_c.Packed_item += client_param.clone()
+            self.global_model_c.Packed_item += client_param.clone() * w
         
         
 
