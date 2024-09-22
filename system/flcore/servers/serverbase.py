@@ -254,7 +254,7 @@ class Server(object):
 
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo + '_' + self.join_clients + '_' + self.r '_' +str(datetime.now()))
+            file_path = result_path + f"{algo} + '_' + {self.join_clients} + '_' + {self.r}+ '_' +{str(datetime.now())}.h5"            
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:
