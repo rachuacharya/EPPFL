@@ -70,44 +70,12 @@ class Server(object):
         self.times = times
         self.eval_gap = args.eval_gap
 
-        # Strip Enc-Dec
-        # parms = EncryptionParameters(scheme_type.ckks)
-        # poly_modulus_degree = 8192
-        # parms.set_poly_modulus_degree(poly_modulus_degree)
-        # parms.set_coeff_modulus(CoeffModulus.Create(
-        #     poly_modulus_degree, [60, 40, 40, 60]))
-        # scale = 2.0**40
-        # context = SEALContext(parms)
-        # print_parameters(context)
-        # encoder = CKKSEncoder(context)
-        # slot_count = encoder.slot_count()
-        # keygen = KeyGenerator(context)
-        # public_key = keygen.create_public_key()
-        # secret_key = keygen.secret_key()
-        # galois_keys = keygen.create_galois_keys()
-        # encryptor = Encryptor(context, public_key)
-        # evaluator = Evaluator(context)
-        # decryptor = Decryptor(context, secret_key)
-        # self.ckks_tools = {
-        #     "ckks_parms": parms,
-        #     "ckks_poly_modulus_degree": poly_modulus_degree,
-        #     "ckks_scale": scale,
-        #     "ckks_context": context,
-        #     "ckks_encoder": encoder,
-        #     "slot_count": slot_count,
-        #     "keygen": keygen,
-        #     "public_key": public_key,
-        #     "secret_key": secret_key,
-        #     "galois_keys": galois_keys,
-        #     "encryptor": encryptor,
-        #     "evaluator": evaluator,
-        #     "decryptor": decryptor
-        # }
 
         self.r = args.r  
+        self.transformation = args.transformation
         self.global_model_c = Packages()
         self.global_model_c.pack_up(copy.deepcopy(self.global_model))
-        self.global_model_c.package_compresion(self.r, args.transformation)
+        self.global_model_c.package_compresion(self.r, self.transformation)
         # Strip Enc-Dec
         # self.global_model_c.package_en(self.ckks_tools)
         self.init = False
