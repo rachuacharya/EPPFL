@@ -42,9 +42,9 @@ def run(args):
                 args.model = FedAvgCNN(in_features=1, num_classes=args.num_classes, dim=1024).to(args.device)
             elif args.dataset == "cifar10":
                 # args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
-                # args.model = DeepCNN(in_features=3, num_classes=args.num_classes).to(args.device)
+                args.model = DeepCNN(in_features=3, num_classes=args.num_classes).to(args.device)
                 # args.model = FedAvgMLP().to(args.device)
-                args.model = ResNet(BasicBlock, [2,2,2,2], num_classes = 10).to(args.device)
+                # args.model = ResNet(BasicBlock, [2,2,2,2], ?num_classes = 10).to(args.device)
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
             # args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
