@@ -184,18 +184,12 @@ class Server(object):
         self.min_wt = min(self.global_model_c.Packed_item.min(), self.min_wt)
         
         print(f'Minimum Weight: {self.min_wt}')
-        
-        
+         
 
     def add_parameters(self, w, client_model):
         for client_param in client_model.Packed_item:
-<<<<<<< Updated upstream
-            self.global_model_c.Packed_item += client_param.clone() * w
-        
-        
-=======
             self.global_model_c.Packed_item += client_param  # * w
->>>>>>> Stashed changes
+
 
     def save_global_model(self):
         model_path = os.path.join("models", self.dataset)
