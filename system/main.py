@@ -48,7 +48,7 @@ def run(args):
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
             # args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
-            args.model = Resnet9(3, 10).to(args.device)
+            args.model = ResNet9(3, 10).to(args.device)
         else:
             raise NotImplementedError
 
