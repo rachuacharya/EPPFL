@@ -76,10 +76,11 @@ class Server(object):
         self.agg_public_keys = None
         self.Compressed_Model_Shape = None
         self.r = args.r  
+        self.transformation = args.transformation
         
         self.global_model_c = Packages()
         self.global_model_c.pack_up(copy.deepcopy(self.global_model))
-        self.global_model_c.package_compresion(self.r, args.transformation)
+        self.global_model_c.package_compresion(self.r, self.transformation)
         self.init = False
 
     def set_clients(self, args, clientObj):
@@ -199,7 +200,7 @@ class Server(object):
         self.result_ts = str(datetime.now())
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path + "{}.h5".format(algo + self.result_ts )
+            file_path = result_path + f"{algo} + '_' + {self.transformation} + '_' {self.join_clients} + '_' + {self.r}+ '_' +{str(datetime.now())}.h5"            
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:
