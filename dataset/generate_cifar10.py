@@ -63,10 +63,18 @@ def generate_cifar10(dir_path, num_clients, num_classes, niid, balance, partitio
     dataset_image = np.array(dataset_image)
     dataset_label = np.array(dataset_label)
 
-    # dataset = []
-    # for i in range(num_classes):
-    #     idx = dataset_label == i
-    #     dataset.append(dataset_image[idx])
+    #######################################################################################################
+    # Choose 600 images for each class
+    num_classes = 10
+    images_per_class = 600
+
+    for class_idx in range(num_classes):
+        class_indices = np.where(np.array(cifar10.targets) == class_idx)[0]
+        selected_indices = np.random.choice(class_indices, images_per_class, replace=False)
+        subset_data.extend(cifar10.data[selected_indices])
+        subset_targets.extend(cifar10.targets[i] for i in selected_indices)
+
+    ####################################################################################################
 
     X, y, statistic = separate_data((dataset_image, dataset_label), num_clients, num_classes, 
                                     niid, balance, partition)

@@ -47,8 +47,8 @@ def run(args):
                 # args.model = ResNet(BasicBlock, [2,2,2,2], ?num_classes = 10).to(args.device)
         elif model_str == "resnet":
             # Resnet for Tranfer Learning
-            # args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
-            args.model = ResNet9(3, 10).to(args.device)
+            args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
+            # args.model = ResNet9(3, 10).to(args.device)
         else:
             raise NotImplementedError
 
