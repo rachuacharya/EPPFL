@@ -3,11 +3,12 @@ import os
 import numpy as np
 import h5py
 import copy
+from mife.data.matrix import Matrix
+from utils.compresion import *
 from datetime import datetime
 
-from utils.compresion import *
-
 from utils.data_utils import read_client_data
+from utils.misc_utils import decode_integers, transpose_cipher
 
 # from seal import *
 
@@ -69,18 +70,18 @@ class Server(object):
 
         self.times = times
         self.eval_gap = args.eval_gap
-
-
+        
+        self.sk_agg = None
+        self.enc_p = None
+        self.agg_public_keys = None
+        self.Compressed_Model_Shape = None
         self.r = args.r  
         self.transformation = args.transformation
+        
         self.global_model_c = Packages()
         self.global_model_c.pack_up(copy.deepcopy(self.global_model))
         self.global_model_c.package_compresion(self.r, self.transformation)
-        # Strip Enc-Dec
-        # self.global_model_c.package_en(self.ckks_tools)
         self.init = False
-        
-        self.min_wt = float('inf')
 
     def set_clients(self, args, clientObj):
         for i in range(self.num_clients):
@@ -103,11 +104,10 @@ class Server(object):
 
     def send_models(self):
         assert (len(self.selected_clients) > 0)
-        # Strip Enc-Dec
-        # self.global_model_c.package_de(self.ckks_tools)
         self.global_model_c.is_Compressed = True
         for client in self.selected_clients:
             client.compressed_model = self.global_model_c
+
 
     def receive_models(self):
         assert (len(self.selected_clients) > 0)
@@ -121,6 +121,7 @@ class Server(object):
             tot_samples += client.train_samples
             self.uploaded_ids.append(client.id)
             self.uploaded_models.append(client.compressed_model)
+            
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
         
@@ -128,68 +129,47 @@ class Server(object):
     def receive_models_c(self):
         assert (len(self.selected_clients) > 0)
 
-        self.uploaded_weights = []
         tot_samples = 0
         self.uploaded_ids = []
         self.uploaded_models = []
         for client in self.selected_clients:
-            self.uploaded_weights.append(client.train_samples)
             tot_samples += client.train_samples
             self.uploaded_ids.append(client.id)
-            # self.uploaded_models.append(copy.deepcopy(
-            #     client.compressed_model.Packed_item))
             self.uploaded_models.append(client.compressed_model.Packed_item_en)
-        for i, w in enumerate(self.uploaded_weights):
-            self.uploaded_weights[i] = w / tot_samples
+            
+        # Save the general shape of received model
+        self.Compressed_Model_Shape = client.compressed_model.Shape_of_Compressed_Item     
+        
 
     def aggregate_parameters_c(self):
         assert (len(self.uploaded_models) > 0)
+        transposed_model = transpose_cipher(self.uploaded_models, self.num_clients)
+        m = list()
+        for wt in range(len(transposed_model)):
+            m.append(FeLWE.decrypt(transposed_model[wt], self.agg_public_keys[wt], self.sk_agg[wt]) %self.enc_p)
+        #  Average Wt and Restore to original shape
+        self.global_model_c.Packed_item = torch.tensor(np.array(decode_integers(m, self.num_clients)) / self.num_clients).reshape(self.Compressed_Model_Shape[0], self.Compressed_Model_Shape[1])
+        print(self.global_model_c.Packed_item)
 
-        temp = None
-        for i in range(len(self.uploaded_models)):
-            if i is 0:
-                plain_w = self.ckks_tools["ckks_encoder"].encode(
-                    self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-                temp = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-                # temp = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp)
-            else:
-                plain_w = self.ckks_tools["ckks_encoder"].encode(
-                    self.uploaded_weights[i], self.ckks_tools["ckks_scale"])
-                temp2 = self.ckks_tools["evaluator"].multiply_plain(self.uploaded_models[i], plain_w)
-                # temp2 = self.ckks_tools["evaluator"].rescale_to_next_inplace(temp2)
-                temp = self.ckks_tools["evaluator"].add(temp, temp2)
-        self.global_model_c.Packed_item_en = temp
-
-        # temp = copy.deepcopy(self.uploaded_models[0])
-        # for item in self.global_model_c.Packed_item:
-        #     item *= 0
-        # self.global_model_c *= 0
-        # temp = self.ckks_tools["evaluator"].multiply(temp, 0)
-
-        # for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
-        #     temp = self.ckks_tools["evaluator"].add(
-        #         temp, self.ckks_tools["evaluator"].multiply(client_model, w))
-            # for server_param, client_param in zip(self.global_model_c.Packed_item, client_model.Packed_item):
-            #     server_param += client_param * w
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
-    
+        
+        print(dir(self.uploaded_models[0]))
+        print(self.uploaded_models[0].Packed_item)
+        print(len(self.uploaded_models))
+        print(self.uploaded_weights)
+
         self.global_model_c = self.uploaded_models[0]
         self.global_model_c.Packed_item = self.global_model_c.Packed_item.zero_()
 
         for w, client_model in zip(self.uploaded_weights, self.uploaded_models):
             self.add_parameters(w, client_model)
-        self.global_model_c.Packed_item = torch.tensor(np.array(self.global_model_c.Packed_item.clone()) / self.num_clients)
-        self.min_wt = min(self.global_model_c.Packed_item.min(), self.min_wt)
-        
-        print(f'Minimum Weight: {self.min_wt}')
-         
+
 
     def add_parameters(self, w, client_model):
         for client_param in client_model.Packed_item:
-            self.global_model_c.Packed_item += client_param.clone()
-
+            self.global_model_c.Packed_item += client_param * w
 
     def save_global_model(self):
         model_path = os.path.join("models", self.dataset)
@@ -217,10 +197,10 @@ class Server(object):
         result_path = "../results/"
         if not os.path.exists(result_path):
             os.makedirs(result_path)
-
+        self.result_ts = str(datetime.now())
         if (len(self.rs_test_acc)):
             algo = algo + "_" + str(self.times)
-            file_path = result_path +  f"{self.transformation}" + f"{algo} + '_' + {self.join_clients} + '_' + {self.r}+ '_' +{str(datetime.now())}.h5"            
+            file_path = result_path + f"{algo} + '_' + {self.transformation} + '_' {self.join_clients} + '_' + {self.r}+ '_' +{str(datetime.now())}.h5"            
             print("File path: " + file_path)
 
             with h5py.File(file_path, 'w') as hf:
@@ -324,3 +304,6 @@ class Server(object):
             else:
                 raise NotImplementedError
         return True
+
+    
+    
